@@ -1,0 +1,286 @@
+﻿
+@model RangrasiyaBusiness.Models.Invoice
+
+@{
+    ViewData["Title"] = "Delete Invoice";
+}
+
+<div class="delete-invoice-page">
+
+    <div class="page-header">
+        <div>
+            <span class="page-eyebrow">INVOICE MANAGEMENT</span>
+            <h1>Delete Invoice</h1>
+            <p>Review the invoice before permanently deleting it.</p>
+        </div>
+
+        <a asp-action="Index" class="back-button">
+            ← Back to Invoices
+        </a>
+    </div>
+
+    <div class="delete-card">
+
+        <div class="warning-icon">!</div>
+
+        <h2>Delete this invoice?</h2>
+
+        <p class="warning-text">
+            This action cannot be undone. The invoice and its related items
+            will be permanently removed.
+        </p>
+
+        <div class="invoice-summary">
+
+            <div class="summary-row">
+                <span>Invoice Number</span>
+                <strong>@Model.InvoiceNumber</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Invoice Date</span>
+                <strong>@Model.InvoiceDate.ToString("dd-MM-yyyy")</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Customer</span>
+                <strong>@Model.Customer?.CustomerName</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Payment Status</span>
+                <strong>@Model.PaymentStatus</strong>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>Grand Total</span>
+                <strong>₹@Model.GrandTotal.ToString("N2")</strong>
+            </div>
+
+        </div>
+
+        <form asp-action="Delete" method="post">
+
+            <input type="hidden" asp-for="InvoiceId" />
+
+            <div class="form-actions">
+
+                <a asp-action="Index" class="cancel-button">
+                    Cancel
+                </a>
+
+                <button type="submit" class="delete-button">
+                    🗑 Delete Permanently
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+
+    .delete-invoice-page {
+        min-height: 100vh;
+        padding: 35px;
+        background: #f5f7fb;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .page-eyebrow {
+        color: #1769e0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .page-header h1 {
+        margin: 7px 0;
+        color: #172b4d;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .back-button {
+        padding: 12px 18px;
+        border: 1px solid #dce4ef;
+        border-radius: 9px;
+        background: white;
+        color: #52657c;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .delete-card {
+        width: 100%;
+        max-width: 650px;
+        box-sizing: border-box;
+        margin: 45px auto;
+        padding: 38px;
+        border: 1px solid #f0d5d5;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 8px 25px rgba(50, 30, 30, 0.07);
+        text-align: center;
+    }
+
+    .warning-icon {
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff0f0;
+        color: #dc3545;
+        font-size: 36px;
+        font-weight: 800;
+    }
+
+    .delete-card h2 {
+        margin: 0 0 12px;
+        color: #243b53;
+        font-size: 25px;
+    }
+
+    .warning-text {
+        max-width: 450px;
+        margin: 0 auto 28px;
+        color: #718096;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .invoice-summary {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #e5eaf2;
+        border-radius: 12px;
+        background: #f8fafd;
+        text-align: left;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #e8edf4;
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row strong {
+        color: #334e68;
+        text-align: right;
+    }
+
+    .total-row {
+        margin-top: 5px;
+        padding-top: 17px;
+        color: #dc3545;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .total-row strong {
+        color: #dc3545;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .cancel-button,
+    .delete-button {
+        padding: 13px 20px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .cancel-button {
+        border: 1px solid #dce4ef;
+        background: white;
+        color: #52657c;
+    }
+
+    .delete-button {
+        border: none;
+        background: #dc3545;
+        color: white;
+    }
+
+    .delete-button:hover {
+        background: #b92333;
+    }
+
+    @@media (max-width: 768px) {
+
+        .delete-invoice-page {
+            padding: 22px 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .delete-card {
+            margin: 25px auto;
+            padding: 25px 18px;
+        }
+
+    }
+
+    @@media (max-width: 500px) {
+
+        .summary-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .summary-row strong {
+            text-align: left;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .cancel-button,
+        .delete-button {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+    }
+
+</style>

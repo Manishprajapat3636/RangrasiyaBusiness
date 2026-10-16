@@ -1,0 +1,150 @@
+@model RangrasiyaBusiness.Models.Work
+
+@{
+    ViewData["Title"] = "Work Details";
+    var totalExpenses = Model.WorkExpenses?.Sum(e => e.Amount) ?? 0;
+    var netProfitLoss = Model.ActualAmount - totalExpenses;
+}
+
+<h1 class="mb-4">Work Details</h1>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@Model.WorkName</h4>
+    </div>
+
+    <div class="card-body">
+        <dl class="row">
+
+            <dt class="col-sm-4">Customer</dt>
+            <dd class="col-sm-8">
+                @(Model.Customer?.CustomerName ?? "N/A")
+            </dd>
+
+            <dt class="col-sm-4">Start Date</dt>
+            <dd class="col-sm-8">
+                @Model.StartDate.ToString("dd-MM-yyyy")
+            </dd>
+
+            <dt class="col-sm-4">End Date</dt>
+            <dd class="col-sm-8">
+                @(Model.EndDate?.ToString("dd-MM-yyyy") ?? "Not Set")
+            </dd>
+
+            <dt class="col-sm-4">Status</dt>
+            <dd class="col-sm-8">
+                <span class="badge bg-info">@Model.Status</span>
+            </dd>
+
+            <dt class="col-sm-4">Description</dt>
+            <dd class="col-sm-8">@Model.Description</dd>
+
+            <dt class="col-sm-4">Work Location</dt>
+            <dd class="col-sm-8">@Model.WorkLocation</dd>
+
+            <dt class="col-sm-4">Estimated Amount</dt>
+            <dd class="col-sm-8 text-primary fw-bold">
+                ₹@Model.EstimatedAmount.ToString("N2")
+            </dd>
+
+            <dt class="col-sm-4">Actual Amount</dt>
+            <dd class="col-sm-8 text-success fw-bold">
+                ₹@Model.ActualAmount.ToString("N2")
+            </dd>
+
+            <dt class="col-sm-4">Difference</dt>
+            <dd class="col-sm-8 fw-bold">
+                ₹@((Model.ActualAmount - Model.EstimatedAmount).ToString("N2"))
+            </dd>
+
+        </dl>
+
+        <hr />
+
+        <h3>Work Expenses</h3>
+
+        @if (Model.WorkExpenses != null && Model.WorkExpenses.Any())
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Expense Type</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var expense in Model.WorkExpenses)
+                    {
+                        <tr>
+                            <td>@expense.ExpenseType</td>
+                            <td>@expense.Description</td>
+                            <td>₹@expense.Amount.ToString("N2")</td>
+                            <td>@expense.ExpenseDate.ToString("dd-MM-yyyy")</td>
+                            <td>@expense.Notes</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <h4 class="text-danger">
+                Total Expenses:
+                ₹@Model.WorkExpenses.Sum(e => e.Amount).ToString("N2")
+            </h4>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No expenses added for this work yet.
+            </div>
+        }
+        <hr />
+
+        <h3>Financial Summary</h3>
+
+        <div class="card border-primary mb-3">
+            <div class="card-body">
+
+                <p>
+                    <strong>Actual Amount:</strong>
+                    ₹@Model.ActualAmount.ToString("N2")
+                </p>
+
+                <p>
+                    <strong>Total Expenses:</strong>
+                    ₹@totalExpenses.ToString("N2")
+                </p>
+
+                <h4 class="@(netProfitLoss >= 0 ? "text-success" : "text-danger")">
+                    @(netProfitLoss >= 0 ? "Net Profit" : "Net Loss"):
+                    ₹@Math.Abs(netProfitLoss).ToString("N2")
+                </h4>
+
+            </div>
+        </div>
+        <a asp-controller="WorkExpense"
+           asp-action="Create"
+           class="btn btn-primary">
+            + Add Expense
+        </a>
+
+    </div>
+
+    <div class="card-footer">
+
+        <a asp-action="Edit"
+           asp-route-id="@Model.WorkId"
+           class="btn btn-warning">
+            Edit
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Back to List
+        </a>
+
+    </div>
+</div>

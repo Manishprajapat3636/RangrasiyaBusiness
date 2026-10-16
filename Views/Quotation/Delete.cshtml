@@ -1,0 +1,222 @@
+﻿
+@model RangrasiyaBusiness.Models.Quotation
+
+@{
+    ViewData["Title"] = "Delete Quotation";
+}
+
+<div class="delete-page">
+
+    <div class="delete-card">
+
+        <!-- Warning Icon -->
+        <div class="delete-icon">
+            ⚠️
+        </div>
+
+        <h1>Delete Quotation?</h1>
+
+        <p class="delete-message">
+            Are you sure you want to delete this quotation?
+            This action cannot be undone.
+        </p>
+
+        <!-- Quotation Details -->
+        <div class="quotation-summary">
+
+            <div class="summary-row">
+                <span>Quotation Number</span>
+                <strong>@Model.QuotationNumber</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Customer</span>
+                <strong>
+                    @(Model.Customer?.CustomerName ?? "-")
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Quotation Date</span>
+                <strong>
+                    @Model.QuotationDate.ToString("dd-MM-yyyy")
+                </strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Status</span>
+                <strong>@Model.Status</strong>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>Grand Total</span>
+                <strong>₹ @Model.GrandTotal.ToString("N2")</strong>
+            </div>
+
+        </div>
+
+        <!-- Delete Form -->
+        <form asp-action="Delete" method="post">
+
+            <input type="hidden" asp-for="QuotationId" />
+
+            <div class="delete-actions">
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    🗑️ Yes, Delete
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+
+    .delete-page {
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 35px 20px;
+        background: #f5f7fb;
+    }
+
+    .delete-card {
+        width: 100%;
+        max-width: 550px;
+        background: #ffffff;
+        border: 1px solid #e5eaf2;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(30, 55, 90, 0.08);
+    }
+
+    .delete-icon {
+        width: 75px;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff1f2;
+        font-size: 35px;
+    }
+
+    .delete-card h1 {
+        margin: 0 0 12px;
+        color: #172b4d;
+        font-size: 28px;
+        font-weight: 750;
+    }
+
+    .delete-message {
+        margin: 0 auto 25px;
+        max-width: 390px;
+        color: #718096;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .quotation-summary {
+        text-align: left;
+        background: #f8faff;
+        border: 1px solid #e3eaf4;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 25px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e5eaf2;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row span {
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .summary-row strong {
+        color: #243b53;
+        font-size: 13px;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .summary-row.total-row {
+        margin-top: 8px;
+        padding-top: 17px;
+        border-top: 2px solid #dbe5f2;
+    }
+
+    .total-row strong {
+        color: #1769e0;
+        font-size: 20px;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .delete-actions .btn {
+        min-width: 145px;
+    }
+
+    @@media (max-width: 576px) {
+
+        .delete-page {
+            padding: 20px 12px;
+        }
+
+        .delete-card {
+            padding: 25px 18px;
+        }
+
+        .delete-card h1 {
+            font-size: 24px;
+        }
+
+        .summary-row {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .summary-row strong {
+            text-align: left;
+        }
+
+        .delete-actions {
+            flex-direction: column;
+        }
+
+        .delete-actions .btn {
+            width: 100%;
+        }
+
+    }
+
+</style>

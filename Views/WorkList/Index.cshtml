@@ -1,0 +1,810 @@
+
+@model IEnumerable<RangrasiyaBusiness.Models.WorkList>
+
+@{
+    ViewData["Title"] = "Work List";
+    var workLists = Model?.ToList() ?? new List<RangrasiyaBusiness.Models.WorkList>();
+}
+
+<div class="wl-index-page">
+
+    <!-- PAGE HEADER -->
+    <div class="wl-index-header">
+        <div>
+            <div class="wl-eyebrow">WORK MANAGEMENT</div>
+            <h1>Work List</h1>
+            <p>Manage work orders, customer details and measurements.</p>
+        </div>
+
+        <a asp-controller="WorkList"
+           asp-action="Create"
+           class="wl-create-btn">
+            <span>＋</span> Create New Work List
+        </a>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="wl-summary-grid">
+
+        <div class="wl-summary-card">
+            <div class="wl-summary-icon wl-icon-blue">📋</div>
+            <div>
+                <span>Total Work Lists</span>
+                <strong>@workLists.Count</strong>
+            </div>
+        </div>
+
+        <div class="wl-summary-card">
+            <div class="wl-summary-icon wl-icon-purple">📅</div>
+            <div>
+                <span>Scheduled Works</span>
+                <strong>@workLists.Count(w => w.FromDate.HasValue || w.ToDate.HasValue)</strong>
+            </div>
+        </div>
+
+        <div class="wl-summary-card">
+            <div class="wl-summary-icon wl-icon-green">👥</div>
+            <div>
+                <span>Customers</span>
+                <strong>@workLists.Select(w => w.CustomerId).Distinct().Count()</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN TABLE PANEL -->
+    <div class="wl-table-panel">
+
+        <div class="wl-table-heading">
+            <div>
+                <h3>All Work Lists</h3>
+                <p>View and manage your saved work orders.</p>
+            </div>
+
+            <div class="wl-search-box">
+                <span>⌕</span>
+                <input type="search"
+                       id="workListSearch"
+                       placeholder="Search work order, customer..."
+                       aria-label="Search work lists" />
+            </div>
+        </div>
+
+        <div class="wl-table-meta">
+            <span>Work order records</span>
+            <span id="workListCount">@workLists.Count records</span>
+        </div>
+
+        <div class="wl-table-scroll">
+            <table class="wl-table" id="workListTable">
+                <thead>
+                    <tr>
+                        <th class="wl-sr-column">#</th>
+                        <th>Work Order</th>
+                        <th>Customer</th>
+                        <th>Quotation / Bill</th>
+                        <th>Work Type</th>
+                        <th>Work Period</th>
+                        <th class="wl-actions-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (workLists.Any())
+                    {
+                        var serial = 1;
+
+                        foreach (var item in workLists)
+                        {
+                            <tr class="wl-data-row">
+                                <td class="wl-serial">@serial</td>
+
+                                <td>
+                                    <div class="wl-order-cell">
+                                        <span class="wl-order-icon">📄</span>
+                                        <div>
+                                            <strong>@item.WorkOrderNo</strong>
+                                            <small>Created @item.CreatedAt.ToString("dd MMM yyyy")</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="wl-customer-cell">
+                                        <span class="wl-avatar">
+                                            @(!string.IsNullOrWhiteSpace(item.Customer?.CustomerName)
+                                                ? item.Customer.CustomerName.Substring(0, 1).ToUpper()
+                                                : "?")
+                                        </span>
+                                        <div>
+                                            <strong>@(item.Customer?.CustomerName ?? "Unknown Customer")</strong>
+                                            <small>
+                                                @(string.IsNullOrWhiteSpace(item.OfficerName)
+                                                    ? "Officer not specified"
+                                                    : item.OfficerName)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="wl-reference-cell">
+                                        <span>
+                                            <small>QTN</small>
+                                            <strong>@(string.IsNullOrWhiteSpace(item.QuotationNo)
+                                                ? "—" : item.QuotationNo)</strong>
+                                        </span>
+                                        <span>
+                                            <small>BILL</small>
+                                            <strong>@(string.IsNullOrWhiteSpace(item.BillNo)
+                                                ? "—" : item.BillNo)</strong>
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.WorkType))
+                                    {
+                                        <span class="wl-type-badge">@item.WorkType</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="wl-muted">Not specified</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="wl-date-cell">
+                                        <span>
+                                            <small>FROM</small>
+                                            <strong>@(item.FromDate?.ToString("dd MMM yyyy") ?? "—")</strong>
+                                        </span>
+                                        <span>
+                                            <small>TO</small>
+                                            <strong>@(item.ToDate?.ToString("dd MMM yyyy") ?? "—")</strong>
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    
+                                    <div class="wl-row-actions">
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.WorkListId"
+                                           class="wl-action-btn wl-view-btn"
+                                           title="View Work List">
+                                            View
+                                        </a>
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.WorkListId"
+                                           class="wl-action-btn wl-print-btn"
+                                           title="Print or save as PDF">
+                                            🖨 PDF
+                                        </a>
+
+                                        <a asp-action="ExportExcel"
+                                           asp-route-id="@item.WorkListId"
+                                           class="wl-action-btn wl-print-btn"
+                                           title="Download this work list as Excel">
+                                            Excel
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.WorkListId"
+                                           class="wl-action-btn wl-edit-btn"
+                                           title="Edit Work List">
+                                            ✎
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.WorkListId"
+                                           class="wl-action-btn wl-delete-btn"
+                                           title="Delete Work List">
+                                            🗑
+                                        </a>
+
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                            serial++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="wl-empty-state">
+                                    <div class="wl-empty-icon">📋</div>
+                                    <h3>No Work Lists Yet</h3>
+                                    <p>Create your first work list to start recording work orders and measurements.</p>
+                                    <a asp-action="Create" class="wl-create-btn">
+                                        ＋ Create Your First Work List
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div id="wlNoSearchResults" class="wl-no-results" hidden>
+                <div>🔎</div>
+                <strong>No matching work lists found</strong>
+                <p>Try another work order number, customer or work type.</p>
+            </div>
+        </div>
+
+        <div class="wl-table-footer">
+            <span>Rangrasiya Business Management</span>
+            <span>Work List Records</span>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .wl-index-page {
+        color: #1e293b;
+        font-family: Arial, Helvetica, sans-serif;
+        width: 100%;
+    }
+
+    .wl-index-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .wl-eyebrow {
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 7px;
+    }
+
+    .wl-index-header h1 {
+        font-size: 30px;
+        font-weight: 800;
+        margin: 0 0 7px;
+        color: #172b4d;
+    }
+
+    .wl-index-header p,
+    .wl-table-heading p {
+        margin: 0;
+        color: #718096;
+        font-size: 14px;
+    }
+    .wl-print-btn {
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #047857 !important;
+}
+
+.wl-print-btn:hover {
+    background: #d1fae5;
+    border-color: #86efac;
+    color: #065f46 !important;
+}
+
+    .wl-create-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 9px;
+        background: #2167df;
+        color: #fff !important;
+        text-decoration: none !important;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(33, 103, 223, .15);
+        transition: background .2s, transform .2s;
+    }
+
+    .wl-create-btn:hover {
+        background: #174fb4;
+        color: #fff !important;
+        transform: translateY(-1px);
+    }
+
+    .wl-create-btn span {
+        font-size: 20px;
+        line-height: 15px;
+    }
+
+    .wl-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .wl-summary-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        box-shadow: 0 4px 18px rgba(30, 50, 80, .035);
+    }
+
+    .wl-summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        font-size: 22px;
+    }
+
+    .wl-icon-blue {
+        background: #eaf2ff;
+    }
+
+    .wl-icon-purple {
+        background: #f1eaff;
+    }
+
+    .wl-icon-green {
+        background: #e5f8ed;
+    }
+
+    .wl-summary-card div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .wl-summary-card span {
+        color: #718096;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .wl-summary-card strong {
+        color: #172b4d;
+        font-size: 25px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .wl-table-panel {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 13px;
+        box-shadow: 0 5px 24px rgba(30, 50, 80, .045);
+    }
+
+    .wl-table-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+        padding: 24px;
+        border-bottom: 1px solid #edf1f6;
+    }
+
+    .wl-table-heading h3 {
+        margin: 0 0 7px;
+        color: #172b4d;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .wl-search-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: min(100%, 340px);
+        padding: 0 13px;
+        border: 1px solid #dce4ef;
+        border-radius: 9px;
+        background: #fff;
+        color: #64748b;
+    }
+
+    .wl-search-box:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+    }
+
+    .wl-search-box span {
+        font-size: 23px;
+    }
+
+    .wl-search-box input {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #1e293b;
+        font-size: 12px;
+    }
+
+    .wl-table-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        color: #718096;
+        font-size: 11px;
+    }
+
+    .wl-table-meta span:last-child {
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-weight: 700;
+    }
+
+    .wl-table-scroll {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .wl-table {
+        width: 100%;
+        min-width: 950px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .wl-table thead th {
+        padding: 14px 15px;
+        background: #f8fafc;
+        border-top: 1px solid #edf1f6;
+        border-bottom: 1px solid #e3eaf3;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        white-space: nowrap;
+    }
+
+    .wl-table tbody td {
+        padding: 16px 15px;
+        border-bottom: 1px solid #edf1f6;
+        color: #334155;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .wl-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .wl-data-row {
+        transition: background .15s;
+    }
+
+    .wl-data-row:hover {
+        background: #f8fbff;
+    }
+
+    .wl-sr-column {
+        width: 45px;
+    }
+
+    .wl-actions-column {
+        width: 175px;
+        text-align: right !important;
+    }
+
+    .wl-serial {
+        color: #94a3b8 !important;
+        font-weight: 700;
+    }
+
+    .wl-order-cell,
+    .wl-customer-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 170px;
+    }
+
+    .wl-order-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 9px;
+        background: #edf4ff;
+        font-size: 16px;
+    }
+
+    .wl-order-cell div,
+    .wl-customer-cell div {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .wl-order-cell strong,
+    .wl-customer-cell strong {
+        color: #243b5a;
+        font-size: 12px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .wl-order-cell small,
+    .wl-customer-cell small {
+        color: #94a3b8;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .wl-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #e7f8ef;
+        color: #17834e;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .wl-reference-cell,
+    .wl-date-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .wl-reference-cell span,
+    .wl-date-cell span {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .wl-reference-cell small,
+    .wl-date-cell small {
+        min-width: 30px;
+        color: #94a3b8;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    .wl-reference-cell strong,
+    .wl-date-cell strong {
+        color: #475569;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .wl-type-badge {
+        display: inline-block;
+        max-width: 150px;
+        padding: 6px 10px;
+        overflow-wrap: anywhere;
+        border-radius: 6px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .wl-muted {
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+    .wl-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .wl-action-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 7px;
+        background: #fff;
+        color: #475569 !important;
+        text-decoration: none !important;
+        font-size: 11px;
+        font-weight: 700;
+        transition: background .15s, border-color .15s;
+    }
+
+    .wl-view-btn:hover {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        color: #1d4ed8 !important;
+    }
+
+    .wl-edit-btn:hover {
+        border-color: #fed7aa;
+        background: #fff7ed;
+        color: #c2410c !important;
+    }
+
+    .wl-delete-btn:hover {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #dc2626 !important;
+    }
+
+    .wl-table-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px 24px;
+        border-top: 1px solid #edf1f6;
+        background: #fcfdff;
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
+    .wl-empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .wl-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 18px;
+        border-radius: 18px;
+        background: #eff6ff;
+        font-size: 30px;
+    }
+
+    .wl-empty-state h3 {
+        margin-bottom: 8px;
+        color: #172b4d;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .wl-empty-state p,
+    .wl-no-results p {
+        margin: 0 0 20px;
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .wl-no-results {
+        padding: 35px 15px;
+        text-align: center;
+    }
+
+    .wl-no-results div {
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .wl-no-results strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+    }
+
+    .wl-no-results p {
+        margin-bottom: 0;
+    }
+
+    @@media (max-width: 900px) {
+        .wl-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .wl-index-header h1 {
+            font-size: 25px;
+        }
+
+        .wl-create-btn {
+            width: 100%;
+        }
+
+        .wl-summary-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .wl-summary-card {
+            padding: 15px;
+        }
+
+        .wl-table-heading {
+            padding: 18px;
+        }
+
+        .wl-search-box {
+            width: 100%;
+        }
+
+        .wl-table-meta,
+        .wl-table-footer {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("workListSearch");
+        const table = document.getElementById("workListTable");
+        const countLabel = document.getElementById("workListCount");
+        const noResults = document.getElementById("wlNoSearchResults");
+
+        if (!searchInput || !table || !countLabel || !noResults) {
+            return;
+        }
+
+        const rows = Array.from(
+            table.querySelectorAll("tbody tr.wl-data-row")
+        );
+
+        function filterWorkLists() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const matches = row.textContent.toLowerCase().includes(query);
+                row.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount++;
+                }
+            });
+
+            countLabel.textContent =
+                visibleCount + (visibleCount === 1 ? " record" : " records");
+
+            noResults.hidden = visibleCount !== 0 || rows.length === 0;
+            table.style.display =
+                visibleCount === 0 && rows.length > 0 ? "none" : "";
+        }
+
+        searchInput.addEventListener("input", filterWorkLists);
+    });
+</script>

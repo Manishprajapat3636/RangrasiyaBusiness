@@ -1,0 +1,191 @@
+@model IEnumerable<RangrasiyaBusiness.Models.Item>
+
+@{
+    ViewData["Title"] = "Items / Services";
+    var items = Model?.ToList() ?? new List<RangrasiyaBusiness.Models.Item>();
+}
+
+<style>
+    .items-page { max-width: 1500px; margin: 0 auto; padding: 24px; color: #183153; }
+    .items-page * { box-sizing: border-box; }
+    .items-page .items-heading { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:24px; }
+    .items-page .eyebrow { color:#1769e0; font-size:.76rem; font-weight:800; letter-spacing:.12em; margin-bottom:7px; }
+    .items-page h2 { margin:0; font-size:clamp(1.5rem, 2.5vw, 2rem); font-weight:800; color:#16345b; }
+    .items-page .subheading { color:#728198; margin:7px 0 0; }
+    .items-page .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 14px; border:1px solid transparent; border-radius:9px; text-decoration:none; font-weight:700; font-size:.9rem; cursor:pointer; white-space:nowrap; transition:background .15s, box-shadow .15s, transform .15s; }
+    .items-page .btn:focus-visible { outline:3px solid #9cc5ff; outline-offset:2px; }
+    .items-page .btn-primary { color:#fff; background:#1769e0; border-color:#1769e0; }
+    .items-page .btn-primary:hover { background:#0d55bd; border-color:#0d55bd; box-shadow:0 4px 12px #1769e033; }
+    .items-page .btn-edit { color:#155fc2; background:#eef5ff; border-color:#cfe0ff; }
+    .items-page .btn-edit:hover { background:#dfebff; }
+    .items-page .btn-delete { color:#c92e42; background:#fff0f1; border-color:#ffd4d9; }
+    .items-page .btn-delete:hover { background:#ffe0e4; }
+    .items-page .summary-card, .items-page .list-card { background:#fff; border:1px solid #e1e9f3; border-radius:16px; box-shadow:0 8px 24px rgba(25,57,97,.045); }
+    .items-page .summary-card { display:flex; justify-content:space-between; align-items:center; padding:20px 24px; margin-bottom:22px; }
+    .items-page .summary-label { display:block; color:#718096; font-size:.9rem; margin-bottom:5px; }
+    .items-page .summary-number { font-size:1.8rem; line-height:1.2; font-weight:800; color:#183153; }
+    .items-page .summary-icon { width:50px; height:50px; display:grid; place-items:center; border-radius:14px; background:#eaf2ff; font-size:1.45rem; }
+    .items-page .list-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px 24px; border-bottom:1px solid #e8eef6; }
+    .items-page .list-head h3 { margin:0; font-size:1.1rem; font-weight:800; }
+    .items-page .list-head p { margin:5px 0 0; color:#728198; font-size:.9rem; }
+    .items-page .count-pill { border-radius:999px; background:#edf4ff; color:#1769e0; padding:7px 12px; font-size:.82rem; font-weight:800; white-space:nowrap; }
+    .items-page .table-wrap { width:100%; }
+    .items-page table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .items-page thead { background:#f4f7fc; }
+    .items-page th { padding:14px 12px; color:#61718a; text-align:left; font-size:.76rem; font-weight:800; text-transform:uppercase; letter-spacing:.035em; border-bottom:1px solid #e2eaf4; }
+    .items-page td { padding:16px 12px; border-bottom:1px solid #edf1f7; vertical-align:middle; font-size:.9rem; }
+    .items-page tbody tr:last-child td { border-bottom:0; }
+    .items-page tbody tr:hover { background:#fbfdff; }
+    .items-page .col-sr { width:6%; text-align:center; }
+    .items-page .col-name { width:35%; }
+    .items-page .col-category { width:14%; }
+    .items-page .col-unit { width:10%; }
+    .items-page .col-rate { width:13%; }
+    .items-page .col-gst { width:10%; }
+    .items-page .col-actions { width:12%; }
+    .items-page .item-name-cell { display:flex; align-items:flex-start; gap:11px; min-width:0; }
+    .items-page .item-avatar { flex:0 0 36px; width:36px; height:36px; display:grid; place-items:center; border-radius:11px; color:#175bd0; background:#e1edff; font-weight:800; }
+    .items-page .item-name { min-width:0; overflow-wrap:anywhere; word-break:normal; white-space:normal; line-height:1.5; font-weight:700; color:#1b3558; }
+    .items-page .category-pill, .items-page .gst-pill { display:inline-block; max-width:100%; overflow-wrap:anywhere; border-radius:7px; padding:5px 8px; font-size:.8rem; }
+    .items-page .category-pill { color:#14775b; background:#eaf8f1; }
+    .items-page .gst-pill { color:#087647; background:#dcfce9; border-radius:999px; font-weight:800; white-space:nowrap; }
+    .items-page .unit-text { overflow-wrap:anywhere; }
+    .items-page .rate-text { font-weight:800; white-space:nowrap; color:#244366; }
+    .items-page .action-buttons { display:flex; flex-wrap:wrap; gap:6px; }
+    .items-page .action-buttons .btn { padding:7px 10px; font-size:.82rem; }
+    .items-page .empty-state { text-align:center; padding:44px 18px; color:#718096; }
+    .items-page .empty-state .empty-icon { font-size:2rem; margin-bottom:10px; }
+    .items-page .empty-state h4 { margin:0 0 7px; color:#183153; }
+    .items-page .empty-state p { margin:0 0 18px; }
+    @@media (max-width: 900px) {
+        .items-page { padding:16px; }
+        .items-page .col-sr { width:7%; }
+        .items-page .col-name { width:31%; }
+        .items-page .col-category { width:13%; }
+        .items-page .col-unit { width:9%; }
+        .items-page .col-rate { width:14%; }
+        .items-page .col-gst { width:10%; }
+        .items-page .col-actions { width:16%; }
+        .items-page th, .items-page td { padding:12px 8px; }
+    }
+    @@media (max-width: 640px) {
+        .items-page { padding:12px; }
+        .items-page .items-heading { align-items:flex-start; flex-direction:column; }
+        .items-page .summary-card { padding:16px; }
+        .items-page .list-head { padding:16px; }
+        .items-page .table-wrap { overflow:visible; }
+        .items-page table, .items-page tbody, .items-page tr, .items-page td { display:block; width:100%; }
+        .items-page thead { display:none; }
+        .items-page tbody { padding:10px; }
+        .items-page tbody tr { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; border:1px solid #e2eaf4; border-radius:12px; margin-bottom:12px; overflow:hidden; background:#fff; }
+        .items-page tbody tr:hover { background:#fff; }
+        .items-page td { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:11px 10px; border-bottom:1px solid #edf1f7; min-width:0; }
+        .items-page td::before { content:attr(data-label); flex:0 0 auto; color:#718096; font-size:.72rem; font-weight:800; text-transform:uppercase; }
+        .items-page td[data-label="Item Name"] { grid-column:1 / -1; }
+        .items-page td[data-label="Actions"] { grid-column:1 / -1; display:block; }
+        .items-page td[data-label="Actions"]::before { display:block; margin-bottom:8px; }
+        .items-page td[data-label="Sr."] { display:none; }
+        .items-page .item-name-cell { max-width:100%; }
+        .items-page .action-buttons { justify-content:flex-start; }
+        .items-page .empty-state { grid-column:1 / -1; }
+    }
+</style>
+
+<div class="items-page">
+    <div class="items-heading">
+        <div>
+            <div class="eyebrow">INVENTORY &amp; SERVICES</div>
+            <h2>Items / Services</h2>
+            <p class="subheading">Manage your products, services and pricing.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">+ Add Item</a>
+    </div>
+
+    <section class="summary-card" aria-label="Items summary">
+        <div>
+            <span class="summary-label">Total Items &amp; Services</span>
+            <strong class="summary-number">@items.Count</strong>
+        </div>
+        <div class="summary-icon" aria-hidden="true">📦</div>
+    </section>
+
+    <section class="list-card">
+        <div class="list-head">
+            <div>
+                <h3>Items &amp; Services List</h3>
+                <p>Your saved products and services</p>
+            </div>
+            <span class="count-pill">@items.Count Items</span>
+        </div>
+
+        <div class="table-wrap">
+            <table aria-label="Items and services">
+                <colgroup>
+                    <col class="col-sr" />
+                    <col class="col-name" />
+                    <col class="col-category" />
+                    <col class="col-unit" />
+                    <col class="col-rate" />
+                    <col class="col-gst" />
+                    <col class="col-actions" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="col-sr">Sr.</th>
+                        <th class="col-name">Item Name / Description</th>
+                        <th class="col-category">Category</th>
+                        <th class="col-unit">Unit</th>
+                        <th class="col-rate">Rate</th>
+                        <th class="col-gst">GST (%)</th>
+                        <th class="col-actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (items.Any())
+                {
+                    var sr = 1;
+                    foreach (var item in items)
+                    {
+                        <tr>
+                            <td class="col-sr" data-label="Sr.">@sr</td>
+                            <td data-label="Item Name">
+                                <div class="item-name-cell">
+                                    <div class="item-avatar" aria-hidden="true">
+                                        @(string.IsNullOrWhiteSpace(item.ItemName) ? "I" : item.ItemName.Trim().Substring(0, 1).ToUpperInvariant())
+                                    </div>
+                                    <div class="item-name">@(string.IsNullOrWhiteSpace(item.ItemName) ? "Unnamed Item" : item.ItemName)</div>
+                                </div>
+                            </td>
+                            <td data-label="Category"><span class="category-pill">@(string.IsNullOrWhiteSpace(item.Category) ? "General" : item.Category)</span></td>
+                            <td data-label="Unit"><span class="unit-text">@(string.IsNullOrWhiteSpace(item.Unit) ? "-" : item.Unit)</span></td>
+                            <td data-label="Rate"><span class="rate-text">₹ @item.Rate.ToString("N2")</span></td>
+                            <td data-label="GST"><span class="gst-pill">@item.GSTPercentage.ToString("0.##")%</span></td>
+                            <td data-label="Actions">
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@item.ItemId" class="btn btn-edit">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.ItemId" class="btn btn-delete"
+                                       onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        sr++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-icon">📦</div>
+                                <h4>No Items Found</h4>
+                                <p>Add your first item or service to get started.</p>
+                                <a asp-action="Create" class="btn btn-primary">+ Add Item</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

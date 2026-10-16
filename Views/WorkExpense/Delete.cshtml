@@ -1,0 +1,102 @@
+﻿
+@model RangrasiyaBusiness.Models.WorkExpense
+
+@{
+    ViewData["Title"] = "Delete Work Expense";
+}
+
+<div class="form-page">
+
+    <div class="page-heading">
+        <div>
+            <span class="page-eyebrow">EXPENSE MANAGEMENT</span>
+            <h2>Delete Work Expense</h2>
+            <p>Review the expense before permanently deleting it.</p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            ← Back
+        </a>
+    </div>
+
+    <div class="modern-panel delete-panel">
+
+        <div class="delete-warning">
+            <div class="warning-icon">!</div>
+            <h4>Are you sure?</h4>
+            <p>
+                This expense will be permanently deleted.
+                This action cannot be undone.
+            </p>
+        </div>
+
+        <div class="p-4">
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span>Work / Project</span>
+                    <strong>
+                        @(Model.Work?.WorkName ?? "N/A")
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Expense Type</span>
+                    <strong>
+                        @(Model.ExpenseType ?? "Other")
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Description</span>
+                    <strong>
+                        @(Model.Description ?? "-")
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Amount</span>
+                    <strong class="text-danger">
+                        ₹@Model.Amount.ToString("N2")
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Expense Date</span>
+                    <strong>
+                        @Model.ExpenseDate.ToString("dd-MM-yyyy")
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Notes</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Notes)
+                            ? "-"
+                            : Model.Notes)
+                    </strong>
+                </div>
+
+            </div>
+
+            <form asp-action="Delete" method="post" class="form-actions mt-4">
+
+                <input type="hidden" asp-for="WorkExpenseId" />
+
+                <button type="submit" class="btn btn-danger">
+                    Delete Permanently
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

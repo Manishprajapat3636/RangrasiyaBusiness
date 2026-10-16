@@ -1,0 +1,239 @@
+﻿@{
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    bool IsActive(string controller, string? action = null)
+    {
+        if (action == null)
+            return currentController == controller;
+
+        return currentController == controller &&
+               currentAction == action;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - RangrasiyaBusiness</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/RangrasiyaBusiness.styles.css"
+          asp-append-version="true" />
+
+</head>
+
+<body>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="app-layout" id="appLayout">
+
+            <!-- SIDEBAR -->
+
+            <aside class="sidebar">
+
+                
+
+                
+                <!-- BRAND -->
+                <div class="brand">
+                    <div class="brand-icon">R</div>
+
+                    <div class="brand-text">
+                        <h4>RANGRASIYA</h4>
+                        <small>Business System</small>
+                    </div>
+
+                    <button type="button"
+                            id="sidebarToggle"
+                            class="sidebar-toggle"
+                            aria-label="Toggle sidebar"
+                            title="Show or hide sidebar"
+                            aria-expanded="true">
+                        ☰
+                    </button>
+                </div>
+
+
+                <!-- MENU -->
+
+                <nav class="sidebar-menu">
+
+                    <a asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="@(IsActive("Dashboard") ? "active" : "")">
+
+                        <span class="menu-icon">🏠</span>
+                        <span>Dashboard</span>
+
+                    </a>
+
+                    <a asp-controller="Customer"
+                       asp-action="Index"
+                       class="@(IsActive("Customer") ? "active" : "")">
+
+                        <span class="menu-icon">👥</span>
+                        <span>Customers</span>
+
+                    </a>
+
+                    <a asp-controller="Item"
+                       asp-action="Index"
+                       class="@(IsActive("Item") ? "active" : "")">
+
+                        <span class="menu-icon">📦</span>
+                        <span>Items / Services</span>
+
+                    </a>
+
+                    <a asp-controller="Work"
+                       asp-action="Index"
+                       class="@(IsActive("Work") ? "active" : "")">
+
+                        <span class="menu-icon">🛠️</span>
+                        <span>Works / Projects</span>
+
+                    </a>
+                    <a asp-controller="WorkList"
+                       asp-action="Index"
+                       class="@(IsActive("WorkList") ? "active" : "")">
+
+                        <span class="menu-icon">📋</span>
+                        <span>Work List</span>
+
+                    </a>
+                    <a asp-controller="Quotation"
+                       asp-action="Index"
+                       class="@(IsActive("Quotation") ? "active" : "")">
+
+                        <span class="menu-icon">📄</span>
+                        <span>Quotations</span>
+
+                    </a>
+
+                    <a asp-controller="Invoice"
+                       asp-action="Index"
+                       class="@(IsActive("Invoice") ? "active" : "")">
+
+                        <span class="menu-icon">🧾</span>
+                        <span>Invoices</span>
+
+                    </a>
+
+                    <a asp-controller="Reports"
+                           asp-action="Index"
+                           class="menu-link">
+
+                            <span class="menu-icon">📊</span>
+                            <span>Reports</span>
+                        </a>
+
+                    <a asp-controller="CompanyProfile"
+                       asp-action="Index"
+                       class="@(IsActive("CompanyProfile") ? "active" : "")">
+
+                        <span class="menu-icon">⚙️</span>
+                        <span>Settings</span>
+
+                    </a>
+
+                </nav>
+
+                <!-- SIDEBAR FOOTER -->
+
+                <div class="sidebar-bottom">
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post">
+
+                        <button type="submit"
+                                class="logout-button">
+
+                            <span>🚪</span>
+                            <span>Logout</span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </aside>
+
+            <!-- MAIN AREA -->
+
+            <div class="main-area">
+
+                <!-- TOPBAR -->
+
+                <header class="topbar">
+
+                    <div class="topbar-title">
+
+                        <h5>Rangrasiya Business Management</h5>
+
+                        <small>
+                            Marketing, Advertising & Painting Works
+                        </small>
+
+                    </div>
+
+                    <div class="user-info">
+
+                        <span>👤</span>
+                        <span>@User.Identity.Name</span>
+
+                    </div>
+
+                </header>
+
+                <!-- PAGE CONTENT -->
+
+                <main class="page-content">
+
+                    @RenderBody()
+
+                </main>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <main>
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

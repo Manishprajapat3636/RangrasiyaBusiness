@@ -1,0 +1,526 @@
+
+@model RangrasiyaBusiness.Models.Quotation
+
+@{
+    ViewData["Title"] = "Create Quotation";
+}
+
+
+<style>
+    .form-page .btn, .form-page button, .form-page a.btn,
+    .modern-primary-btn, .details-btn, .edit-btn, .delete-btn {
+        border: 1px solid currentColor !important;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .form-page .btn:hover, .form-page button:hover, .form-page a.btn:hover,
+    .modern-primary-btn:hover, .details-btn:hover, .edit-btn:hover, .delete-btn:hover {
+        box-shadow: 0 3px 10px rgba(15, 40, 75, .14);
+        filter: brightness(.97);
+    }
+    .quotation-items-table {
+        min-width: 1250px;
+        width: 100%;
+        table-layout: fixed;
+        margin-bottom: 0;
+    }
+    .quotation-items-table th, .quotation-items-table td {
+        border: 1px solid #d7e0eb !important;
+        vertical-align: middle;
+        padding: .65rem .55rem;
+    }
+    .quotation-items-table th { white-space: nowrap; font-size: .9rem; }
+    .quotation-items-table th:nth-child(1) { width: 250px; }
+    .quotation-items-table th:nth-child(2) { width: 105px; }
+    .quotation-items-table th:nth-child(3) { width: 125px; }
+    .quotation-items-table th:nth-child(4) { width: 115px; }
+    .quotation-items-table th:nth-child(5) { width: 100px; }
+    .quotation-items-table th:nth-child(6) { width: 125px; }
+    .quotation-items-table th:nth-child(7) { width: 135px; }
+    .quotation-items-table th:nth-child(8) { width: 125px; }
+    .quotation-items-table th:nth-child(9) { width: 100px; }
+    .quotation-items-table .form-control, .quotation-items-table .form-select {
+        width: 100%; min-width: 0; min-height: 40px;
+        padding: .45rem .5rem; font-size: .92rem;
+    }
+    .quotation-items-table .item-select { white-space: normal; overflow-wrap: anywhere; }
+    .quotation-items-table .btn { white-space: nowrap; }
+    @@media (max-width: 768px) { .quotation-items-table { min-width: 1250px; } }
+</style>
+
+<div class="form-page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+        <div>
+            <span class="page-eyebrow">SALES / BUSINESS</span>
+            <h2>Create Quotation</h2>
+            <p>Create a professional quotation for your customer.</p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            ← Back
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3"></div>
+
+        <!-- Quotation Information -->
+        <div class="modern-panel mb-4">
+
+            <div class="table-heading">
+                <div>
+                    <h5>Quotation Information</h5>
+                    <small class="text-muted">
+                        Enter quotation and customer details.
+                    </small>
+                </div>
+            </div>
+
+            <div class="p-4">
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <label asp-for="QuotationNumber"
+                               class="form-label">
+                            Quotation Number
+                        </label>
+
+                        <input asp-for="QuotationNumber"
+                               class="form-control"
+                               placeholder="QTN-001" />
+
+                        <span asp-validation-for="QuotationNumber"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="QuotationDate"
+                               class="form-label">
+                            Quotation Date
+                        </label>
+
+                        <input asp-for="QuotationDate"
+                               type="date"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CustomerId"
+                               class="form-label">
+                            Select Customer
+                        </label>
+
+                        <select asp-for="CustomerId"
+                                asp-items="ViewBag.Customers"
+                                class="form-select">
+                            <option value="">-- Select Customer --</option>
+                        </select>
+
+                        <span asp-validation-for="CustomerId"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Status"
+                               class="form-label">
+                            Status
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+                            <option value="Draft">Draft</option>
+                            <option value="Sent">Sent</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="WorkOrderNo"
+                               class="form-label">
+                            Work Order No.
+                        </label>
+
+                        <input asp-for="WorkOrderNo"
+                               class="form-control"
+                               placeholder="Enter work order number" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="PlaceOfWork"
+                               class="form-label">
+                            Place of Work
+                        </label>
+
+                        <input asp-for="PlaceOfWork"
+                               class="form-control"
+                               placeholder="Enter place of work" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="QuotationValidity"
+                               class="form-label">
+                            Quotation Validity
+                        </label>
+
+                        <select asp-for="QuotationValidity"
+                                class="form-select">
+                            <option value="15 Days">15 Days</option>
+                            <option value="30 Days">30 Days</option>
+                            <option value="45 Days">45 Days</option>
+                            <option value="60 Days">60 Days</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Items -->
+        <div class="modern-panel mb-4">
+
+            <div class="table-heading">
+                <div>
+                    <h5>Quotation Items</h5>
+                    <small class="text-muted">
+                        Select an item to automatically fill Rate and GST.
+                    </small>
+                </div>
+            </div>
+
+            <div class="p-4">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered align-middle quotation-items-table"
+                           id="itemsTable">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Rate</th>
+                                <th>GST %</th>
+                                <th>Amount</th>
+                                <th>GST Amount</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="itemsBody"></tbody>
+
+                    </table>
+
+                </div>
+
+                <button type="button"
+                        class="btn btn-outline-primary mt-3"
+                        onclick="addItem()">
+                    + Add Item
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Summary -->
+        <div class="modern-panel mb-4">
+
+            <div class="table-heading">
+                <h5>Quotation Summary</h5>
+            </div>
+
+            <div class="p-4">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label asp-for="SubTotal"
+                               class="form-label">
+                            Sub Total (₹)
+                        </label>
+
+                        <input asp-for="SubTotal"
+                               id="subTotal"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="GSTAmount"
+                               class="form-label">
+                            GST Amount (₹)
+                        </label>
+
+                        <input asp-for="GSTAmount"
+                               id="gstAmount"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="GrandTotal"
+                               class="form-label">
+                            Grand Total (₹)
+                        </label>
+
+                        <input asp-for="GrandTotal"
+                               id="grandTotal"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+
+            <button type="submit"
+                    class="modern-primary-btn">
+                Save Quotation
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        let itemIndex = 0;
+
+        function addItem() {
+
+            const row = `
+                <tr>
+
+                    <td>
+                        <select name="QuotationItems[${itemIndex}].ItemId"
+                                class="form-select item-select"
+                                required>
+
+                            <option value="">
+                                -- Select Item --
+                            </option>
+
+                            @foreach (var item in ViewBag.Items)
+                            {
+                                <option value="@item.ItemId"
+                                        data-rate="@item.Rate"
+                                        data-gst="@item.GSTPercentage"
+                                        data-unit="@item.Unit">
+                                    @item.ItemName
+                                </option>
+                            }
+
+                        </select>
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].Quantity"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               value="1"
+                               class="form-control quantity"
+                               oninput="calculate()"
+                               required />
+                    </td>
+
+                    <td>
+                        <select name="QuotationItems[${itemIndex}].Unit"
+                                class="form-select">
+
+                            <option value="Nos">Nos</option>
+                            <option value="Sq.Ft">Sq.Ft</option>
+                            <option value="Sq.Mtr">Sq.Mtr</option>
+                            <option value="Sq INCH">Sq INCH</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Meter">Meter</option>
+                            <option value="Ltr">Ltr</option>
+                            <option value="Day">Day</option>
+                            <option value="Hour">Hour</option>
+
+                        </select>
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].Rate"
+                               type="number"
+                               step="0.01"
+                               class="form-control rate"
+                               readonly />
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].GSTPercentage"
+                               type="number"
+                               step="0.01"
+                               class="form-control gstPercentage"
+                               readonly />
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].Amount"
+                               type="number"
+                               step="0.01"
+                               class="form-control amount"
+                               readonly />
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].GSTAmount"
+                               type="number"
+                               step="0.01"
+                               class="form-control gstAmount"
+                               readonly />
+                    </td>
+
+                    <td>
+                        <input name="QuotationItems[${itemIndex}].TotalAmount"
+                               type="number"
+                               step="0.01"
+                               class="form-control totalAmount"
+                               readonly />
+                    </td>
+
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="this.closest('tr').remove(); calculate();">
+                            Remove
+                        </button>
+                    </td>
+
+                </tr>
+            `;
+
+            document.getElementById("itemsBody")
+                .insertAdjacentHTML("beforeend", row);
+
+            // IMPORTANT: Attach event only to the Item dropdown
+            const rows = document.querySelectorAll("#itemsBody tr");
+            const currentRow = rows[rows.length - 1];
+
+            const itemSelect = currentRow.querySelector(".item-select");
+
+            itemSelect.addEventListener("change", function () {
+                syncSelectedItem(currentRow, this);
+            });
+
+            itemIndex++;
+
+        }
+
+        function syncSelectedItem(row, itemSelect) {
+            const option = itemSelect.options[itemSelect.selectedIndex];
+            if (!option || !option.value) {
+                row.querySelector(".rate").value = "0";
+                row.querySelector(".gstPercentage").value = "0";
+                calculate();
+                return;
+            }
+
+            row.querySelector(".rate").value = option.dataset.rate || "0";
+            row.querySelector(".gstPercentage").value = option.dataset.gst || "0";
+
+            const unitSelect = row.querySelector("select[name$='.Unit']");
+            const itemUnit = (option.dataset.unit || "").trim();
+
+            if (unitSelect && itemUnit) {
+                let unitOption = Array.from(unitSelect.options)
+                    .find(opt => opt.value.toLowerCase() === itemUnit.toLowerCase());
+
+                if (!unitOption) {
+                    unitOption = new Option(itemUnit, itemUnit);
+                    unitSelect.add(unitOption);
+                }
+                unitSelect.value = unitOption.value;
+            }
+            calculate();
+        }
+
+        function calculate() {
+
+            let subtotal = 0;
+            let gstTotal = 0;
+            let grandTotal = 0;
+
+            document.querySelectorAll("#itemsBody tr").forEach(row => {
+
+                const quantity =
+                    parseFloat(row.querySelector(".quantity")?.value) || 0;
+
+                const rate =
+                    parseFloat(row.querySelector(".rate")?.value) || 0;
+
+                const gstPercentage =
+                    parseFloat(row.querySelector(".gstPercentage")?.value) || 0;
+
+                const amount = quantity * rate;
+
+                const gstAmount =
+                    amount * gstPercentage / 100;
+
+                const total =
+                    amount + gstAmount;
+
+                row.querySelector(".amount").value =
+                    amount.toFixed(2);
+
+                row.querySelector(".gstAmount").value =
+                    gstAmount.toFixed(2);
+
+                row.querySelector(".totalAmount").value =
+                    total.toFixed(2);
+
+                subtotal += amount;
+
+                gstTotal += gstAmount;
+
+                grandTotal += total;
+
+            });
+
+            document.getElementById("subTotal").value =
+                subtotal.toFixed(2);
+
+            document.getElementById("gstAmount").value =
+                gstTotal.toFixed(2);
+
+            document.getElementById("grandTotal").value =
+                grandTotal.toFixed(2);
+
+        }
+
+        // Add one item row automatically when page opens
+        document.addEventListener("DOMContentLoaded", function () {
+            addItem();
+        });
+
+    </script>
+}

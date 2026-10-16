@@ -1,0 +1,151 @@
+﻿@model RangrasiyaBusiness.Models.QuotationCondition
+
+@{
+    ViewData["Title"] = "Add Condition";
+    var quotation = ViewBag.Quotation as RangrasiyaBusiness.Models.Quotation;
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">Add Condition</h2>
+            <p class="text-muted mb-0">
+                Add one condition to this quotation.
+            </p>
+        </div>
+
+        <a asp-action="Index"
+           asp-route-quotationId="@quotation.QuotationId"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Conditions
+
+        </a>
+
+    </div>
+
+
+    <!-- Quotation Information -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <div class="text-muted small">
+                        QUOTATION NUMBER
+                    </div>
+
+                    <div class="fw-bold fs-5">
+                        @quotation.QuotationNumber
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="text-muted small">
+                        CUSTOMER
+                    </div>
+
+                    <div class="fw-bold fs-5">
+                        @(quotation.Customer?.CustomerName ?? "-")
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Form -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <h5 class="fw-bold mb-0">
+                Condition Details
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="QuotationId" />
+
+
+                <div class="mb-4">
+
+                    <label asp-for="ConditionText"
+                           class="form-label fw-semibold">
+                        Condition
+                    </label>
+
+                    <textarea asp-for="ConditionText"
+                              class="form-control"
+                              rows="6"
+                              placeholder="Enter one quotation condition..."
+                              autofocus></textarea>
+
+                    <span asp-validation-for="ConditionText"
+                          class="text-danger">
+                    </span>
+
+                    <div class="form-text">
+                        Add only one condition here.
+                        You can add more conditions separately.
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+
+                        <i class="bi bi-check-lg"></i>
+                        Save Condition
+
+                    </button>
+
+
+                    <a asp-action="Index"
+                       asp-route-quotationId="@quotation.QuotationId"
+                       class="btn btn-outline-secondary px-4">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

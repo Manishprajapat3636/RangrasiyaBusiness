@@ -1,0 +1,275 @@
+
+@model IEnumerable<RangrasiyaBusiness.Models.Quotation>
+
+@{
+    ViewData["Title"] = "Quotations";
+
+    var quotationList = Model.ToList();
+    var totalQuotations = quotationList.Count;
+    var totalAmount = quotationList.Sum(q => q.GrandTotal);
+    var draftCount = quotationList.Count(q => q.Status == "Draft");
+    var approvedCount = quotationList.Count(q => q.Status == "Approved");
+    var currentSortBy = (ViewBag.SortBy as string) ?? "date";
+    var currentSortOrder = (ViewBag.SortOrder as string) ?? "desc";
+}
+
+
+<style>
+    .customers-page .btn, .customers-page button, .customers-page a,
+    .modern-primary-btn, .details-btn, .edit-btn, .delete-btn {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 8px;
+    }
+    .customers-page .btn:hover, .customers-page button:hover, .customers-page a:hover {
+        box-shadow: 0 3px 10px rgba(15, 40, 75, .12);
+    }
+    .quotation-tools { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding: 0 1.25rem 1rem; }
+    .quotation-tools label { font-weight:600; color:#40516a; }
+    .quotation-tools select { border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px; background:#fff; }
+    .modern-table { width:100%; }
+    .modern-table th, .modern-table td { border-bottom:1px solid #dce4ef; vertical-align:middle; }
+    .quotation-customer { min-width:180px; max-width:250px; white-space:normal; overflow-wrap:anywhere; }
+    .quotation-customer strong, .quotation-customer small { display:block; white-space:normal; overflow-wrap:anywhere; }
+    .quotation-customer small { margin-top:3px; color:#64748b; }
+    .quotation-action-buttons { display:flex; flex-wrap:wrap; gap:6px; }
+</style>
+
+<div class="customers-page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+
+        <div>
+            <span class="page-eyebrow">SALES / BUSINESS</span>
+            <h2>Quotations</h2>
+            <p>Create, manage and share professional quotations.</p>
+        </div>
+
+        <a asp-action="Create" class="modern-primary-btn">
+            + Create Quotation
+        </a>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards mb-4">
+
+        <div class="summary-card">
+            <div class="summary-card-icon">#</div>
+            <div>
+                <p>Total Quotations</p>
+                <h3>@totalQuotations</h3>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-icon">₹</div>
+            <div>
+                <p>Total Quotation Value</p>
+                <h3>₹@totalAmount.ToString("N2")</h3>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-icon">D</div>
+            <div>
+                <p>Draft Quotations</p>
+                <h3>@draftCount</h3>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-icon">A</div>
+            <div>
+                <p>Approved Quotations</p>
+                <h3>@approvedCount</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quotations Table -->
+    <div class="modern-panel">
+
+        <div class="table-heading">
+
+            <div>
+                <h5>Quotation List</h5>
+                <small class="text-muted">
+                    Manage your customer quotations.
+                </small>
+            </div>
+
+            <span class="table-label">
+                @totalQuotations Records
+            </span>
+
+        </div>
+
+        <form asp-action="Index" method="get" class="quotation-tools">
+            <label for="sortBy">Sort by</label>
+            <select id="sortBy" name="sortBy" onchange="this.form.submit()">
+                <option value="number" selected="@(currentSortBy == "number")">Quotation Number</option>
+                <option value="date" selected="@(currentSortBy == "date")">Quotation Date</option>
+                <option value="amount" selected="@(currentSortBy == "amount")">Amount</option>
+                <option value="customer" selected="@(currentSortBy == "customer")">Customer</option>
+                <option value="status" selected="@(currentSortBy == "status")">Status</option>
+            </select>
+            <label for="order">Order</label>
+            <select id="order" name="order" onchange="this.form.submit()">
+                <option value="asc" selected="@(currentSortOrder == "asc")">Ascending</option>
+                <option value="desc" selected="@(currentSortOrder == "desc")">Descending</option>
+            </select>
+        </form>
+
+        <div class="table-responsive">
+
+            @if (!quotationList.Any())
+            {
+                <div class="empty-state text-center p-5">
+
+                    <h5>No Quotations Found</h5>
+
+                    <p class="text-muted">
+                        Create your first quotation to get started.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="modern-primary-btn">
+                        + Create Quotation
+                    </a>
+
+                </div>
+            }
+            else
+            {
+                <table class="modern-table">
+
+                    <thead>
+                        <tr>
+                            <th>Sr.</th>
+                            <th>Quotation No.</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Work Order No.</th>
+                            <th>Place of Work</th>
+                            <th>Status</th>
+                            <th>Total Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int sr = 1;
+                        }
+
+                        @foreach (var quotation in quotationList)
+                        {
+                            <tr>
+
+                                <td>@sr</td>
+
+                                <td>
+                                    <strong>
+                                        @quotation.QuotationNumber
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @quotation.QuotationDate.ToString("dd-MM-yyyy")
+                                </td>
+
+                                <td>
+                                    <div class="quotation-customer">
+                                        <strong>@(quotation.Customer?.CustomerName ?? "N/A")</strong>
+                                        <small>Contact: @(string.IsNullOrWhiteSpace(quotation.Customer?.ContactPerson) ? "Not specified" : quotation.Customer.ContactPerson)</small>
+                                        @if (!string.IsNullOrWhiteSpace(quotation.Customer?.Phone))
+                                        {
+                                            <small>Phone: @quotation.Customer.Phone</small>
+                                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(quotation.WorkOrderNo)
+                                        ? "-"
+                                        : quotation.WorkOrderNo)
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(quotation.PlaceOfWork)
+                                        ? "-"
+                                        : quotation.PlaceOfWork)
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        @quotation.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹@quotation.GrandTotal.ToString("N2")
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Conditions"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="btn btn-sm btn-warning">
+                                            Terms & Conditions
+                                        </a>
+                                        <a asp-action="Details"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="details-btn">
+                                            Details
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="edit-btn">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="DownloadPdf"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="details-btn">
+                                            PDF
+                                        </a>
+
+                                        <a asp-action="ExportExcel"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="details-btn"
+                                           title="Download this quotation as Excel">
+                                            Excel
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@quotation.QuotationId"
+                                           class="delete-btn">
+                                            Delete
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            sr++;
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+
+        </div>
+
+    </div>
+
+</div>

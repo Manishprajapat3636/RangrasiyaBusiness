@@ -1,0 +1,134 @@
+@model IEnumerable<RangrasiyaBusiness.Models.Work>
+
+@{
+    ViewData["Title"] = "Works / Projects";
+}
+
+<div class="customers-page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+
+        <div>
+            <h2>Works / Projects</h2>
+            <p>Manage your projects, locations and work expenses</p>
+        </div>
+
+        <a asp-action="Create" class="modern-primary-btn">
+            + Create New Work
+        </a>
+
+    </div>
+
+    <!-- Works Table -->
+    <div class="modern-panel">
+
+        <div class="table-heading">
+            <h5>Work / Project List</h5>
+            <span class="table-label">All Projects</span>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="modern-table">
+
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Work Name</th>
+                        <th>Customer</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Estimated</th>
+                        <th>Actual</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @{
+                        int sr = 1;
+                    }
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>@sr</td>
+
+                            <td>
+                                <strong>@item.WorkName</strong>
+                            </td>
+
+                            <td>
+                                @item.Customer?.CustomerName
+                            </td>
+
+                            <td>
+                                @item.StartDate.ToString("dd-MM-yyyy")
+                            </td>
+
+                            <td>
+                                @(item.EndDate?.ToString("dd-MM-yyyy") ?? "-")
+                            </td>
+
+                            <td>
+                                <span class="status-badge">
+                                    @item.Status
+                                </span>
+                            </td>
+
+                            <td>@item.WorkLocation</td>
+
+                            <td>
+                                ₹@item.EstimatedAmount.ToString("N2")
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹@item.ActualAmount.ToString("N2")
+                                </strong>
+                            </td>
+
+                            <td>
+                                <div class="action-buttons">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.WorkId"
+                                       class="details-btn">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.WorkId"
+                                       class="edit-btn">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-workid="@item.WorkId"
+                                       class="delete-btn"
+                                       onclick="return confirm('Are you sure you want to delete this work?');">
+                                        Delete
+                                    </a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        sr++;
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

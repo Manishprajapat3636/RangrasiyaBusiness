@@ -1,0 +1,473 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - RANGRASIYA</title>
+
+    <style>
+            .password-wrapper {
+                position: relative;
+            }
+
+                .password-wrapper .form-control {
+                    padding-right: 45px;
+                }
+
+            .password-toggle {
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                font-size: 18px;
+                color: #777;
+            }
+
+                .password-toggle:hover {
+                    color: #1976d2;
+                }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #eef4ff;
+            color: #172b4d;
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .brand-side {
+            width: 52%;
+            padding: 55px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(145deg, #092d61, #176bd1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-side::before {
+            content: "";
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            right: -180px;
+            top: -120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .brand-side::after {
+            content: "";
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            left: -170px;
+            bottom: -130px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .brand-content,
+        .brand-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-box {
+            width: 55px;
+            height: 55px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #176bd1;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .brand-logo h2 {
+            margin: 0;
+            font-size: 25px;
+            letter-spacing: 1px;
+        }
+
+        .brand-logo p {
+            margin: 3px 0 0;
+            opacity: .8;
+            font-size: 12px;
+        }
+
+        .brand-content h1 {
+            margin-top: 100px;
+            margin-bottom: 20px;
+            font-size: 46px;
+            line-height: 1.15;
+        }
+
+        .brand-content h1 span {
+            color: #70d6ff;
+        }
+
+        .brand-content > p {
+            max-width: 430px;
+            line-height: 1.8;
+            color: #dcecff;
+        }
+
+        .feature-list {
+            margin-top: 40px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(255,255,255,.16);
+            font-size: 20px;
+        }
+
+        .feature strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .feature small {
+            color: #dcecff;
+        }
+
+        .brand-footer {
+            font-size: 13px;
+            color: #dcecff;
+        }
+
+        .form-side {
+            width: 48%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px;
+            background: #f6f9ff;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 460px;
+            background: white;
+            padding: 42px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(27, 64, 110, .12);
+        }
+
+        .form-logo {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border-radius: 18px;
+            background: #eaf2ff;
+            color: #176bd1;
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin: 0;
+            font-size: 29px;
+            color: #102c55;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin: 10px 0 30px;
+            color: #8190a6;
+            font-size: 14px;
+        }
+
+        .validation {
+            color: #dc3545;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #526581;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #dce5f1;
+            border-radius: 12px;
+            outline: none;
+            font-size: 14px;
+            transition: .25s;
+            background: #fbfdff;
+        }
+
+        .form-control:focus {
+            border-color: #176bd1;
+            box-shadow: 0 0 0 4px rgba(23,107,209,.1);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .form-options a,
+        .register-link a {
+            color: #176bd1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            background: linear-gradient(90deg, #176bd1, #2499f3);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(23,107,209,.25);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #8190a6;
+            font-size: 14px;
+        }
+
+        @@media (max-width: 900px) {
+            .brand-side {
+                display: none;
+            }
+
+            .form-side {
+                width: 100%;
+                min-height: 100vh;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .form-side {
+                padding: 18px;
+            }
+
+            .login-card {
+                padding: 28px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <section class="brand-side">
+
+            <div class="brand-content">
+
+                <div class="brand-logo">
+                    <div class="logo-box">R</div>
+
+                    <div>
+                        <h2>RANGRASIYA</h2>
+                        <p>Business Management System</p>
+                    </div>
+                </div>
+
+                <h1>
+                    Creative Ideas.<br />
+                    <span>Stronger Brands.</span>
+                </h1>
+
+                <p>
+                    Manage your customers, quotations, invoices,
+                    projects and business activities in one place.
+                </p>
+
+                <div class="feature-list">
+
+                    <div class="feature">
+                        <div class="feature-icon">🎨</div>
+                        <div>
+                            <strong>Creative Designs</strong>
+                            <small>Bring your ideas to life</small>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <div>
+                            <strong>Business Management</strong>
+                            <small>Organize your daily work</small>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">🛡️</div>
+                        <div>
+                            <strong>Secure Access</strong>
+                            <small>Your business data matters</small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="brand-footer">
+                © @DateTime.Now.Year RANGRASIYA · Built for better business
+            </div>
+
+        </section>
+
+        <section class="form-side">
+
+            <div class="login-card">
+
+                <div class="form-logo">R</div>
+
+                <h2>Welcome Back</h2>
+
+                <p class="subtitle">
+                    Login to continue to your account
+                </p>
+
+                <div class="validation">
+                    @Html.ValidationSummary()
+                </div>
+
+                <form asp-action="Login" method="post">
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+
+                        <input type="email"
+                               name="email"
+                               class="form-control"
+                               placeholder="Enter your email"
+                               required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+
+                        <div class="password-wrapper">
+                            <input type="password"
+                                   name="password"
+                                   id="passwordInput"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   required />
+
+                            <button type="button"
+                                    class="password-toggle"
+                                    onclick="togglePassword()">
+                                👁
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+
+                        <label>
+                            <input type="checkbox" name="rememberMe" />
+                            Remember me
+                        </label>
+
+                        <a href="#">Forgot Password?</a>
+
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Login →
+                    </button>
+
+                </form>
+
+                <div class="register-link">
+                    Don't have an account?
+                    <a asp-action="Register">Register Now</a>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</body>
+</html>
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById("passwordInput");
+        const button = document.querySelector(".password-toggle");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            button.textContent = "🙈";
+        } else {
+            passwordInput.type = "password";
+            button.textContent = "👁";
+        }
+    }
+</script>

@@ -1,0 +1,250 @@
+﻿
+@model IEnumerable<RangrasiyaBusiness.Models.WorkExpense>
+
+@{
+    ViewData["Title"] = "Work Expenses";
+    var totalExpenses = Model.Sum(e => e.Amount);
+    var expenseCount = Model.Count();
+}
+
+<div class="customers-page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+        <div>
+            <span class="page-eyebrow">FINANCE / PROJECTS</span>
+            <h2>Work Expenses</h2>
+            <p>Track and manage your project-related expenses.</p>
+        </div>
+
+        <a asp-action="Create" class="modern-primary-btn">
+            <span>+</span> Add Expense
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards mb-4">
+
+        <div class="summary-card">
+            <div class="summary-card-icon">₹</div>
+            <div>
+                <p>Total Expenses</p>
+                <h3 class="text-danger">
+                    ₹@totalExpenses.ToString("N2")
+                </h3>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-icon">#</div>
+            <div>
+                <p>Expense Records</p>
+                <h3>@expenseCount</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Filters -->
+    <div class="modern-panel mb-4">
+
+        <div class="table-heading">
+            <div>
+                <h5>Search & Filter</h5>
+                <small class="text-muted">
+                    Find expenses by description, type or date.
+                </small>
+            </div>
+        </div>
+
+        <div class="p-3">
+
+            <form asp-action="Index" method="get" class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text"
+                           name="searchString"
+                           value="@ViewBag.SearchString"
+                           class="form-control"
+                           placeholder="Description or notes..." />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Expense Type</label>
+                    <select name="expenseType"
+                            asp-items="ViewBag.ExpenseTypes"
+                            class="form-select">
+                        <option value="">-- All Types --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date"
+                           name="fromDate"
+                           value="@ViewBag.FromDate"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date"
+                           name="toDate"
+                           value="@ViewBag.ToDate"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit"
+                            class="modern-primary-btn w-100">
+                        Search
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Clear Filters
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Expense List -->
+    <div class="modern-panel">
+
+        <div class="table-heading">
+            <div>
+                <h5>Expense List</h5>
+                <small class="text-muted">
+                    All recorded work expenses
+                </small>
+            </div>
+
+            <span class="table-label">
+                @expenseCount Records
+            </span>
+        </div>
+
+        <div class="table-responsive">
+
+            @if (!Model.Any())
+            {
+                <div class="empty-state text-center p-5">
+                    <h5>No Expenses Found</h5>
+                    <p class="text-muted">
+                        No expenses match your current filters.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="modern-primary-btn">
+                        + Add First Expense
+                    </a>
+                </div>
+            }
+            else
+            {
+                <table class="modern-table">
+
+                    <thead>
+                        <tr>
+                            <th>Sr.</th>
+                            <th>Work</th>
+                            <th>Expense Type</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int sr = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>@sr</td>
+
+                                <td>
+                                    <strong>
+                                        @(item.Work?.WorkName ?? "N/A")
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="city-badge">
+                                        @(item.ExpenseType ?? "Other")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(item.Description ?? "-")
+                                </td>
+
+                                <td>
+                                    <strong class="text-danger">
+                                        ₹@item.Amount.ToString("N2")
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @item.ExpenseDate.ToString("dd-MM-yyyy")
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(item.Notes)
+                                        ? "-"
+                                        : item.Notes)
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <a asp-controller="Work"
+                                           asp-action="Details"
+                                           asp-route-id="@item.WorkId"
+                                           class="details-btn">
+                                            Details
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.WorkExpenseId"
+                                           class="edit-btn">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.WorkExpenseId"
+                                           class="delete-btn"
+                                           onclick="return confirm('Are you sure you want to delete this expense?');">
+                                            Delete
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            sr++;
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+
+        </div>
+
+    </div>
+
+</div>

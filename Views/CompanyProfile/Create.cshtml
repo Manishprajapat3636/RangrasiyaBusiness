@@ -1,0 +1,171 @@
+﻿@model RangrasiyaBusiness.Models.CompanyProfile
+
+@{
+    ViewData["Title"] = "Create Company Profile";
+}
+
+<div class="customers-page">
+
+    <div class="page-heading">
+        <div>
+            <h2>Create Company Profile</h2>
+            <p>Add your company information, tax details, branding and bank details.</p>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <!-- Company Information -->
+        <div class="modern-panel mb-4 p-4">
+            <h5 class="fw-bold mb-3">Company Information</h5>
+
+            <div class="mb-4">
+                <label asp-for="LogoFile" class="form-label fw-semibold">Company Logo</label>
+                <input asp-for="LogoFile"
+                       type="file"
+                       class="form-control"
+                       accept="image/*" />
+                <small class="text-muted">Upload JPG, JPEG, PNG or WEBP logo.</small>
+            </div>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label asp-for="CompanyName" class="form-label">Company Name</label>
+                    <input asp-for="CompanyName" class="form-control" />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="OwnerName" class="form-label">Owner Name</label>
+                    <input asp-for="OwnerName" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label">Phone Number</label>
+                    <input asp-for="Phone" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" type="email" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label">Business Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="City" class="form-label">City</label>
+                    <input asp-for="City" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="State" class="form-label">State</label>
+                    <input asp-for="State" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Pincode" class="form-label">Pincode</label>
+                    <input asp-for="Pincode" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="BusinessType" class="form-label">Business Type</label>
+                    <input asp-for="BusinessType"
+                           class="form-control"
+                           placeholder="e.g. Marketing, Advertising & Painting Works" />
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tax & Registration -->
+        <div class="modern-panel mb-4 p-4">
+            <h5 class="fw-bold mb-3">Tax & Registration Details</h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label asp-for="GSTIN" class="form-label">GSTIN</label>
+                    <input asp-for="GSTIN" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="PAN" class="form-label">PAN</label>
+                    <input asp-for="PAN" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="UDYAMNumber" class="form-label">UDYAM Number</label>
+                    <input asp-for="UDYAMNumber" class="form-control" />
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bank Details -->
+        <div class="modern-panel mb-4 p-4">
+            <h5 class="fw-bold mb-3">Bank Details</h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label asp-for="BankName" class="form-label">Bank Name</label>
+                    <input asp-for="BankName" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="AccountNumber" class="form-label">Account Number</label>
+                    <input asp-for="AccountNumber" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IFSCCode" class="form-label">IFSC Code</label>
+                    <input asp-for="IFSCCode" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Branch" class="form-label">Branch</label>
+                    <input asp-for="Branch" class="form-control" />
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Document Settings -->
+        <div class="modern-panel mb-4 p-4">
+            <h5 class="fw-bold mb-3">Document Settings</h5>
+
+            <label asp-for="TermsAndConditions" class="form-label">
+                Default Terms & Conditions
+            </label>
+
+            <textarea asp-for="TermsAndConditions"
+                      class="form-control"
+                      rows="5"
+                      placeholder="Enter default terms and conditions..."></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="modern-primary-btn">
+                Save Company Profile
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

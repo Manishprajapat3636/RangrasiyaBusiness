@@ -1,0 +1,663 @@
+﻿
+@model RangrasiyaBusiness.Models.WorkList
+
+@{
+    ViewData["Title"] = "Work List Details";
+
+    var measurements = Model.WorkListMeasurements
+        ?? new List<RangrasiyaBusiness.Models.WorkListMeasurement>();
+
+    var grandTotal = measurements.Sum(m => m.Total);
+}
+
+<div class="worklist-page">
+
+    <!-- ACTION BAR: hidden during printing -->
+    <div class="worklist-actions no-print">
+        <div>
+            <div class="worklist-eyebrow">WORK MANAGEMENT</div>
+            <h2>Work Order Details</h2>
+            <p>Review, print or save this work order as PDF.</p>
+        </div>
+
+        <div class="action-buttons">
+            <button type="button" class="wl-btn wl-print"
+                    onclick="window.print()">
+                🖨 Print
+            </button>
+
+            <button type="button" class="wl-btn wl-pdf"
+                    onclick="window.print()">
+                📄 Save as PDF
+            </button>
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.WorkListId"
+               class="wl-btn wl-edit">
+                ✏ Edit
+            </a>
+
+            <a asp-action="Index" class="wl-btn wl-back">
+                ← Back
+            </a>
+        </div>
+    </div>
+
+    <!-- PRINTABLE DOCUMENT -->
+    <div class="work-order-document">
+
+        <div class="document-top-line"></div>
+
+        <header class="company-header">
+            <div class="company-mark">R</div>
+            <div>
+                <h1>RANGRASIYA</h1>
+                <h3>MARKETING, ADVERTISING AND PAINTING WORKS</h3>
+                <p>Work Order & Measurement Sheet</p>
+            </div>
+        </header>
+
+        <div class="document-title">
+            <h2>WORK LIST</h2>
+            <div class="document-number">
+                <span>WORK ORDER NO.</span>
+                <strong>@Model.WorkOrderNo</strong>
+            </div>
+        </div>
+
+        <div class="document-meta">
+            <div>
+                <span>Quotation No.</span>
+                <strong>@(string.IsNullOrWhiteSpace(Model.QuotationNo)
+                    ? "—" : Model.QuotationNo)</strong>
+            </div>
+            <div>
+                <span>Bill No.</span>
+                <strong>@(string.IsNullOrWhiteSpace(Model.BillNo)
+                    ? "—" : Model.BillNo)</strong>
+            </div>
+            <div>
+                <span>Created On</span>
+                <strong>@Model.CreatedAt.ToString("dd-MM-yyyy")</strong>
+            </div>
+        </div>
+
+        <section class="document-section">
+            <h4>Customer & Work Information</h4>
+
+            <div class="information-grid">
+                <div class="info-item">
+                    <span>Customer Name</span>
+                    <strong>@(Model.Customer?.CustomerName ?? "—")</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Officer Name</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.OfficerName)
+                        ? "—" : Model.OfficerName)</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Officer Contact</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.OfficerContact)
+                        ? "—" : Model.OfficerContact)</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Work Type</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.WorkType)
+                        ? "—" : Model.WorkType)</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>Department</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.Department)
+                        ? "—" : Model.Department)</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>From Date</span>
+                    <strong>@(Model.FromDate?.ToString("dd-MM-yyyy") ?? "—")</strong>
+                </div>
+
+                <div class="info-item">
+                    <span>To Date</span>
+                    <strong>@(Model.ToDate?.ToString("dd-MM-yyyy") ?? "—")</strong>
+                </div>
+
+                <div class="info-item full-width">
+                    <span>Work Site / Address</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.WorkSiteAddress)
+                        ? "—" : Model.WorkSiteAddress)</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="document-section">
+            <h4>Work Measurements</h4>
+
+            <table class="measurement-table">
+                <thead>
+                    <tr>
+                        <th style="width:6%">S.No.</th>
+                        <th style="width:25%">Work Description</th>
+                        <th style="width:20%">Work Location</th>
+                        <th style="width:12%">Unit</th>
+                        <th style="width:12%">Length</th>
+                        <th style="width:10%">Width</th>
+                        <th style="width:8%">Qty</th>
+                        <th style="width:13%">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (measurements.Any())
+                    {
+                        var serial = 1;
+
+                        foreach (var item in measurements)
+                        {
+                            <tr>
+                                <td class="text-center">@serial</td>
+                                <td>@item.Description</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.Location)
+                                    ? "—" : item.Location)</td>
+                                <td>@item.Unit</td>
+                                <td class="text-end">@item.Length.ToString("N2")</td>
+                                <td class="text-end">@item.Width.ToString("N2")</td>
+                                <td class="text-end">@item.Quantity.ToString("N2")</td>
+                                <td class="text-end">
+                                    <strong>@item.Total.ToString("N2")</strong>
+                                </td>
+                            </tr>
+
+                            serial++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="empty-measurements">
+                                No measurements recorded.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="text-end">
+                            <strong>GRAND TOTAL</strong>
+                        </td>
+                        <td class="text-end">
+                            <strong>@grandTotal.ToString("N2")</strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <p class="measurement-note">
+                Note: Measurements and totals are shown in the units
+                specified for each row.
+            </p>
+        </section>
+
+        <div class="document-remarks">
+            <strong>Remarks / Instructions:</strong>
+            <div class="remarks-line"></div>
+            <div class="remarks-line"></div>
+        </div>
+
+        <div class="signature-grid">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <strong>Prepared By</strong>
+                <span>Name & Signature</span>
+            </div>
+
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <strong>Customer / Officer</strong>
+                <span>Name, Signature & Date</span>
+            </div>
+
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <strong>Authorised Signatory</strong>
+                <span>For Rangrasiya</span>
+            </div>
+        </div>
+
+        <footer class="document-footer">
+            <span>Rangrasiya Business Management</span>
+            <span>Work Order: @Model.WorkOrderNo</span>
+        </footer>
+
+    </div>
+</div>
+
+<style>
+    .worklist-page {
+        color: #243247;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .worklist-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .worklist-actions h2 {
+        margin: 4px 0;
+        font-weight: 750;
+    }
+
+    .worklist-actions p {
+        margin: 0;
+        color: #718096;
+    }
+
+    .worklist-eyebrow {
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .wl-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 14px;
+        border: 1px solid #dce3ed;
+        border-radius: 8px;
+        background: white;
+        color: #243247;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .wl-print {
+        background: #eaf2ff;
+        color: #1d4ed8;
+    }
+
+    .wl-pdf {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .wl-edit {
+        background: #fff7ed;
+        color: #9a3412;
+    }
+
+    .wl-back {
+        background: #f1f5f9;
+    }
+
+    .work-order-document {
+        max-width: 1050px;
+        margin: 0 auto 30px;
+        padding: 34px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(15, 23, 42, .06);
+    }
+
+    .document-top-line {
+        height: 5px;
+        margin: -34px -34px 24px;
+        background: #1e40af;
+    }
+
+    .company-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #1e40af;
+    }
+
+    .company-mark {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 62px;
+        height: 62px;
+        border-radius: 12px;
+        background: #1e40af;
+        color: white;
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .company-header h1 {
+        margin: 0;
+        color: #1e40af;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+    .company-header h3 {
+        margin: 6px 0;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .company-header p {
+        margin: 0;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .document-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin: 24px 0 16px;
+    }
+
+    .document-title h2 {
+        margin: 0;
+        font-size: 23px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .document-number {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        text-align: right;
+    }
+
+    .document-number span,
+    .document-meta span,
+    .info-item span {
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .document-number strong {
+        color: #1e40af;
+        font-size: 17px;
+    }
+
+    .document-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        padding: 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .document-meta div,
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    .document-section {
+        margin-top: 24px;
+    }
+
+    .document-section h4 {
+        margin: 0 0 13px;
+        padding-bottom: 9px;
+        border-bottom: 1px solid #cbd5e1;
+        color: #1e3a8a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 24px;
+    }
+
+    .info-item strong {
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .measurement-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+    }
+
+    .measurement-table th {
+        background: #1e3a8a;
+        color: white;
+        padding: 10px 7px;
+        border: 1px solid #1e3a8a;
+        text-align: left;
+    }
+
+    .measurement-table td {
+        padding: 10px 7px;
+        border: 1px solid #cbd5e1;
+        overflow-wrap: anywhere;
+    }
+
+    .measurement-table tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    .measurement-table tfoot td {
+        background: #eff6ff;
+        border-top: 2px solid #1e40af;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+
+    .empty-measurements {
+        padding: 24px !important;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .measurement-note {
+        margin: 10px 0 0;
+        color: #64748b;
+        font-size: 10px;
+    }
+
+    .document-remarks {
+        margin-top: 25px;
+        font-size: 11px;
+    }
+
+    .remarks-line {
+        height: 24px;
+        border-bottom: 1px solid #cbd5e1;
+    }
+
+    .signature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+        margin-top: 65px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .signature-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .signature-line {
+        width: 100%;
+        height: 1px;
+        margin-bottom: 6px;
+        border-top: 1px solid #334155;
+    }
+
+    .signature-box span {
+        color: #64748b;
+        font-size: 10px;
+    }
+
+    .document-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 35px;
+        padding-top: 10px;
+        border-top: 1px solid #cbd5e1;
+        color: #64748b;
+        font-size: 9px;
+    }
+
+    @@media (max-width: 768px) {
+        .work-order-document {
+            padding: 18px;
+        }
+
+        .document-top-line {
+            margin: -18px -18px 18px;
+        }
+
+        .company-header {
+            flex-direction: column;
+        }
+
+        .company-header h1 {
+            font-size: 23px;
+        }
+
+        .document-meta {
+            grid-template-columns: 1fr;
+        }
+
+        .worklist-actions {
+            align-items: flex-start;
+        }
+
+        .measurement-table {
+            font-size: 9px;
+        }
+
+        .measurement-table th,
+        .measurement-table td {
+            padding: 5px 3px;
+        }
+    }
+
+    @@page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+
+    @@media print {
+        body {
+            background: white !important;
+            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .no-print,
+        .sidebar,
+        .topbar,
+        .sidebar-bottom,
+        nav {
+            display: none !important;
+        }
+
+        .app-layout,
+        .main-area,
+        .page-content,
+        .worklist-page {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            background: white !important;
+        }
+
+        .work-order-document {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .document-top-line {
+            margin: 0 0 18px !important;
+        }
+
+        .measurement-table thead {
+            display: table-header-group;
+        }
+
+        .measurement-table tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .document-section h4,
+        .document-meta,
+        .company-header {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .signature-grid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        a {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+    }
+</style>

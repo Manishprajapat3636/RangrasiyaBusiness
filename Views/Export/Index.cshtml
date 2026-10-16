@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "Export to Excel";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h2 class="mb-1">Export to Excel</h2>
+            <p class="text-muted mb-0">Download your RangrasiyaBusiness data as Excel (.xlsx) files.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Invoices</h5>
+                    <p class="text-muted">Invoice numbers, dates, customer, GST, totals and payment status.</p>
+                    <a asp-controller="Export" asp-action="Invoices" class="btn btn-success">Export Invoices</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Quotations</h5>
+                    <p class="text-muted">Quotation details, customer, validity and totals.</p>
+                    <a asp-controller="Export" asp-action="Quotations" class="btn btn-success">Export Quotations</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Customers</h5>
+                    <p class="text-muted">Customer contact details, GSTIN, city and address.</p>
+                    <a asp-controller="Export" asp-action="Customers" class="btn btn-success">Export Customers</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Items / Services</h5>
+                    <p class="text-muted">Item name, category, unit, current rate and GST percentage.</p>
+                    <a asp-controller="Export" asp-action="Items" class="btn btn-success">Export Items</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Expenses</h5>
+                    <p class="text-muted">Expense date, type, description, related work and amount.</p>
+                    <a asp-controller="Export" asp-action="Expenses" class="btn btn-success">Export Expenses</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Reports</h5>
+                    <p class="text-muted">Summary totals and monthly invoice and expense breakdowns.</p>
+                    <a asp-controller="Export" asp-action="Reports" class="btn btn-success">Export Reports</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>Work Lists</h5>
+                    <p class="text-muted">Work order, quotation and bill numbers, customer, officer and dates.</p>
+                    <a asp-controller="Export" asp-action="WorkLists" class="btn btn-success">Export Work Lists</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-4 mb-0">
+        Exports include only records belonging to the currently signed-in account. Exporting does not modify or delete database records.
+    </div>
+</div>

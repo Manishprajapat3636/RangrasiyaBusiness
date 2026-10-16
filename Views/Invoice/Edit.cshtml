@@ -1,0 +1,789 @@
+﻿
+@model RangrasiyaBusiness.ViewModels.InvoiceCreateViewModel
+@using RangrasiyaBusiness.Models
+
+@{
+    ViewData["Title"] = "Edit Invoice";
+    var customers = ViewBag.Customers as List<Customer>;
+    var items = ViewBag.Items as List<Item>;
+}
+
+<div class="invoice-edit-page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <span class="page-eyebrow">INVOICE MANAGEMENT</span>
+            <h1>Edit Invoice</h1>
+            <p>Update invoice details and billing items.</p>
+        </div>
+
+        <a asp-action="Index" class="back-button">
+            ← Back to Invoices
+        </a>
+    </div>
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden"
+               name="id"
+               value="@Context.Request.RouteValues["id"]" />
+
+        <!-- Invoice Information -->
+        <div class="edit-panel">
+
+            <div class="panel-heading">
+                <div class="heading-icon">▤</div>
+                <div>
+                    <h2>Invoice Information</h2>
+                    <p>Update the basic invoice details.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label asp-for="InvoiceNumber">Invoice Number</label>
+                    <input asp-for="InvoiceNumber"
+                           class="form-control"
+                           placeholder="Enter invoice number"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="InvoiceDate">Invoice Date</label>
+                    <input asp-for="InvoiceDate"
+                           type="date"
+                           class="form-control"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CustomerId">Customer</label>
+                    <select asp-for="CustomerId"
+                            class="form-control"
+                            required>
+                        <option value="">-- Select Customer --</option>
+
+                        @foreach (var customer in customers ?? new List<Customer>())
+                        {
+                            <option value="@customer.CustomerId">
+                                @customer.CustomerName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PaymentStatus">Payment Status</label>
+                    <select asp-for="PaymentStatus"
+                            class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Partial">Partial</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="WorkOrderNo">Work Order Number</label>
+                    <input asp-for="WorkOrderNo"
+                           class="form-control"
+                           placeholder="Enter work order number" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SACHSNCode">SAC / HSN Code</label>
+                    <input asp-for="SACHSNCode"
+                           class="form-control"
+                           placeholder="Enter SAC / HSN code" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label asp-for="PlaceOfWork">Place of Work</label>
+                    <input asp-for="PlaceOfWork"
+                           class="form-control"
+                           placeholder="Enter work location" />
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Items -->
+        <div class="edit-panel">
+
+            <div class="panel-heading panel-heading-between">
+
+                <div class="heading-left">
+                    <div class="heading-icon">▦</div>
+                    <div>
+                        <h2>Invoice Items</h2>
+                        <p>Update products, services, and quantities.</p>
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="add-item-button"
+                        onclick="addItem()">
+                    ＋ Add Item
+                </button>
+
+            </div>
+
+            <div class="items-wrapper">
+
+                <table class="items-table">
+
+                    <thead>
+                        <tr>
+                            <th>Item / Service</th>
+                            <th>Quantity</th>
+                            <th>Rate</th>
+                            <th>GST %</th>
+                            <th>Amount</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="itemsContainer">
+
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            <tr class="item-row">
+
+                                <td>
+                                    <select name="Items[@i].ItemId"
+                                            class="form-control item-select"
+                                            onchange="updateItem(this)"
+                                            required>
+
+                                        <option value="">-- Select Item --</option>
+
+                                        @foreach (var item in items ?? new List<Item>())
+                                        {
+                                            if (item.ItemId == Model.Items[i].ItemId)
+                                            {
+                                                <option value="@item.ItemId"
+                                                        data-rate="@item.Rate"
+                                                        data-gst="@item.GSTPercentage"
+                                                        selected>
+                                                    @item.ItemName
+                                                </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.ItemId"
+                                                        data-rate="@item.Rate"
+                                                        data-gst="@item.GSTPercentage">
+                                                    @item.ItemName
+                                                </option>
+                                            }
+                                        }
+
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <input name="Items[@i].Quantity"
+                                           type="number"
+                                           step="0.01"
+                                           min="0.01"
+                                           value="@Model.Items[i].Quantity"
+                                           class="form-control quantity-input"
+                                           oninput="calculateTotals()"
+                                           required />
+                                </td>
+
+                                <td>
+                                    <input type="text"
+                                           class="form-control rate-display"
+                                           value="@Model.Items[i].Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                           readonly />
+                                </td>
+
+                                <td>
+                                    <input type="text"
+                                           class="form-control gst-display"
+                                           value="@Model.Items[i].GSTPercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                                           readonly />
+                                </td>
+
+                                <td class="amount-cell">₹0.00</td>
+
+                                <td class="total-cell">₹0.00</td>
+
+                                <td>
+                                    <button type="button"
+                                            class="remove-button"
+                                            onclick="removeItem(this)">
+                                        ×
+                                    </button>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="items-note">
+                Existing invoice items keep their saved rate and GST. Selecting a different item loads its current rate and GST.
+            </div>
+
+        </div>
+
+        <!-- Summary -->
+        <div class="edit-panel summary-panel">
+
+            <div class="summary-content">
+
+                <div>
+                    <h2>Invoice Summary</h2>
+                    <p>Review the updated invoice totals.</p>
+                </div>
+
+                <div class="summary-box">
+
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <strong id="subTotal">₹0.00</strong>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>GST Amount</span>
+                        <strong id="gstTotal">₹0.00</strong>
+                    </div>
+
+                    <div class="grand-total">
+                        <span>Grand Total</span>
+                        <strong id="grandTotal">₹0.00</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+
+            <a asp-action="Index" class="cancel-button">
+                Cancel
+            </a>
+
+            <button type="submit" class="update-button">
+                ✓ Update Invoice
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+
+    .invoice-edit-page {
+        padding: 35px;
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-eyebrow {
+        color: #1769e0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .page-header h1 {
+        margin: 7px 0;
+        color: #172b4d;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .back-button,
+    .cancel-button {
+        padding: 12px 18px;
+        border: 1px solid #dce4ef;
+        border-radius: 9px;
+        color: #52657c;
+        background: white;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .edit-panel {
+        background: white;
+        border: 1px solid #e5eaf2;
+        border-radius: 17px;
+        padding: 27px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 20px rgba(20, 50, 90, 0.05);
+    }
+
+    .panel-heading {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 25px;
+    }
+
+    .panel-heading-between {
+        justify-content: space-between;
+    }
+
+    .heading-left {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .heading-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #e8f1ff;
+        color: #1769e0;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .panel-heading h2,
+    .summary-content h2 {
+        margin: 0 0 5px;
+        color: #243b53;
+        font-size: 20px;
+    }
+
+    .panel-heading p,
+    .summary-content p {
+        margin: 0;
+        color: #8a98aa;
+        font-size: 13px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        color: #52657c;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #dce4ef;
+        border-radius: 9px;
+        padding: 12px;
+        background: #fbfcfe;
+        color: #334155;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: #1769e0;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.08);
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .add-item-button,
+    .update-button {
+        border: none;
+        border-radius: 9px;
+        padding: 12px 17px;
+        background: #1769e0;
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .add-item-button:hover {
+        background: #0d56bd;
+    }
+
+    .items-wrapper {
+        overflow-x: auto;
+    }
+
+    .items-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+    }
+
+    .items-table th {
+        background: #f3f6fb;
+        color: #63758b;
+        padding: 13px 10px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .items-table td {
+        padding: 12px 8px;
+        border-bottom: 1px solid #edf1f6;
+        color: #52657c;
+        font-size: 13px;
+    }
+
+    .items-table .form-control {
+        min-width: 85px;
+        padding: 10px 8px;
+    }
+
+    .items-table td:first-child .form-control {
+        min-width: 220px;
+    }
+
+    .amount-cell,
+    .total-cell {
+        color: #1769e0 !important;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .remove-button {
+        width: 31px;
+        height: 31px;
+        border: none;
+        border-radius: 7px;
+        background: #fff0f1;
+        color: #dc3545;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .remove-button:hover {
+        background: #dc3545;
+        color: white;
+    }
+
+    .items-note {
+        margin-top: 15px;
+        color: #8a98aa;
+        font-size: 12px;
+    }
+
+    .summary-panel {
+        background: #fbfcff;
+    }
+
+    .summary-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    .summary-box {
+        width: 350px;
+        max-width: 100%;
+        background: white;
+        border: 1px solid #e1e8f2;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .summary-line,
+    .grand-total {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 11px 0;
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .summary-line strong {
+        color: #52657c;
+    }
+
+    .grand-total {
+        border-top: 2px solid #1769e0;
+        margin-top: 8px;
+        padding-top: 16px;
+        color: #1769e0;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .grand-total strong {
+        color: #1769e0;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .update-button {
+        min-width: 160px;
+        background: #16834b;
+    }
+
+    .update-button:hover {
+        background: #116c3d;
+    }
+
+    @@media (max-width: 900px) {
+
+        .invoice-edit-page {
+            padding: 22px 15px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .summary-content {
+            flex-direction: column;
+        }
+
+        .summary-box {
+            width: 100%;
+        }
+
+    }
+
+    @@media (max-width: 600px) {
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .edit-panel {
+            padding: 18px;
+        }
+
+        .panel-heading-between {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions a,
+        .form-actions button {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+<script>
+
+    let itemIndex = @Model.Items.Count;
+
+    function getItemOptions() {
+        return `
+            <option value="">-- Select Item --</option>
+            @foreach (var item in items ?? new List<Item>())
+            {
+                <text>
+                <option value="@item.ItemId"
+                        data-rate="@item.Rate"
+                        data-gst="@item.GSTPercentage">
+                    @item.ItemName
+                </option>
+                </text>
+            }
+        `;
+    }
+
+    function addItem() {
+
+        const container = document.getElementById("itemsContainer");
+
+        const row = document.createElement("tr");
+        row.className = "item-row";
+
+        row.innerHTML = `
+            <td>
+                <select name="Items[${itemIndex}].ItemId"
+                        class="form-control item-select"
+                        required
+                        onchange="updateItem(this)">
+                    ${getItemOptions()}
+                </select>
+            </td>
+
+            <td>
+                <input name="Items[${itemIndex}].Quantity"
+                       type="number"
+                       step="0.01"
+                       min="0.01"
+                       value="1"
+                       class="form-control quantity-input"
+                       required
+                       oninput="calculateTotals()" />
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control rate-display"
+                       value="0.00"
+                       readonly />
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control gst-display"
+                       value="0"
+                       readonly />
+            </td>
+
+            <td class="amount-cell">₹0.00</td>
+
+            <td class="total-cell">₹0.00</td>
+
+            <td>
+                <button type="button"
+                        class="remove-button"
+                        onclick="removeItem(this)">
+                    ×
+                </button>
+            </td>
+        `;
+
+        container.appendChild(row);
+        itemIndex++;
+
+    }
+
+    function updateItem(select) {
+
+        const row = select.closest(".item-row");
+        const option = select.options[select.selectedIndex];
+
+        const rate = parseFloat(option.dataset.rate) || 0;
+        const gst = parseFloat(option.dataset.gst) || 0;
+
+        row.querySelector(".rate-display").value = rate.toFixed(2);
+        row.querySelector(".gst-display").value = gst.toFixed(2);
+
+        calculateTotals();
+
+    }
+
+    function removeItem(button) {
+
+        const rows = document.querySelectorAll(".item-row");
+
+        if (rows.length <= 1) {
+            alert("At least one item is required.");
+            return;
+        }
+
+        button.closest(".item-row").remove();
+        calculateTotals();
+
+    }
+
+    function calculateTotals() {
+
+        let subtotal = 0;
+        let gstTotal = 0;
+
+        document.querySelectorAll(".item-row").forEach(row => {
+
+            const quantity =
+                parseFloat(row.querySelector(".quantity-input").value) || 0;
+
+            const rate =
+                parseFloat(row.querySelector(".rate-display").value) || 0;
+
+            const gstPercentage =
+                parseFloat(row.querySelector(".gst-display").value) || 0;
+
+            const amount = quantity * rate;
+            const gstAmount = amount * gstPercentage / 100;
+            const total = amount + gstAmount;
+
+            row.querySelector(".amount-cell").textContent =
+                "₹" + amount.toFixed(2);
+
+            row.querySelector(".total-cell").textContent =
+                "₹" + total.toFixed(2);
+
+            subtotal += amount;
+            gstTotal += gstAmount;
+
+        });
+
+        const grandTotal = subtotal + gstTotal;
+
+        document.getElementById("subTotal").textContent =
+            "₹" + subtotal.toFixed(2);
+
+        document.getElementById("gstTotal").textContent =
+            "₹" + gstTotal.toFixed(2);
+
+        document.getElementById("grandTotal").textContent =
+            "₹" + grandTotal.toFixed(2);
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Existing rows already contain the saved invoice-line rate and GST.
+        // Do not call updateItem() here, because that would replace them with
+        // the current Item master rate. updateItem() runs only when the user
+        // deliberately changes the selected item.
+        calculateTotals();
+    });
+
+</script>

@@ -1,0 +1,533 @@
+﻿
+@model RangrasiyaBusiness.Models.ReportsViewModel
+
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="reports-page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <span class="page-eyebrow">BUSINESS ANALYTICS</span>
+            <h1>Reports</h1>
+            <p>Monitor sales, expenses, and business performance.</p>
+        </div>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="filter-panel">
+
+        <form asp-action="Index" method="get" class="filter-form">
+
+            <div class="filter-field">
+                <label>From Date</label>
+                <input type="date"
+                       name="fromDate"
+                       value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="filter-field">
+                <label>To Date</label>
+                <input type="date"
+                       name="toDate"
+                       value="@Model.ToDate.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <button type="submit" class="filter-button">
+                Apply Filter
+            </button>
+
+            <a asp-action="Index" class="reset-button">
+                Reset
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+
+        <div class="summary-card">
+            <div class="card-icon blue">₹</div>
+            <div>
+                <p>Total Sales</p>
+                <h2>₹@Model.TotalSales.ToString("N2")</h2>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="card-icon orange">↗</div>
+            <div>
+                <p>Total Expenses</p>
+                <h2>₹@Model.TotalExpenses.ToString("N2")</h2>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="card-icon green">✓</div>
+            <div>
+                <p>Net Profit / Loss</p>
+                <h2 class="@(Model.NetProfit < 0 ? "loss-text" : "")">
+                    ₹@Model.NetProfit.ToString("N2")
+                </h2>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="card-icon purple">▤</div>
+            <div>
+                <p>Total Invoices</p>
+                <h2>@Model.TotalInvoices</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Invoice Report -->
+    <div class="report-panel">
+
+        <div class="panel-heading">
+            <div>
+                <h2>Invoice Report</h2>
+                <p>Invoices generated during the selected period.</p>
+            </div>
+
+            <span class="record-count">
+                @Model.Invoices.Count Records
+            </span>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="report-table">
+
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Payment Status</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.Invoices.Any())
+                    {
+                        foreach (var invoice in Model.Invoices)
+                        {
+                            <tr>
+                                <td class="bold-text">
+                                    @invoice.InvoiceNumber
+                                </td>
+
+                                <td>
+                                    @invoice.InvoiceDate.ToString("dd-MM-yyyy")
+                                </td>
+
+                                <td>
+                                    @invoice.Customer?.CustomerName
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        @invoice.PaymentStatus
+                                    </span>
+                                </td>
+
+                                <td class="amount-text">
+                                    ₹@invoice.GrandTotal.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-row">
+                                No invoices found for this date range.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Expense Report -->
+    <div class="report-panel">
+
+        <div class="panel-heading">
+            <div>
+                <h2>Expense Report</h2>
+                <p>Expenses recorded during the selected period.</p>
+            </div>
+
+            <span class="record-count">
+                @Model.Expenses.Count Records
+            </span>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="report-table">
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Work / Project</th>
+                        <th>Expense Type</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.Expenses.Any())
+                    {
+                        foreach (var expense in Model.Expenses)
+                        {
+                            <tr>
+                                <td>
+                                    @expense.ExpenseDate.ToString("dd-MM-yyyy")
+                                </td>
+
+                                <td class="bold-text">
+                                    @expense.Work?.WorkName
+                                </td>
+
+                                <td>
+                                    @expense.ExpenseType
+                                </td>
+
+                                <td>
+                                    @expense.Description
+                                </td>
+
+                                <td class="expense-text">
+                                    ₹@expense.Amount.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-row">
+                                No expenses found for this date range.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .reports-page {
+        min-height: 100vh;
+        padding: 35px;
+        background: #f5f7fb;
+    }
+
+    .page-header {
+        margin-bottom: 28px;
+    }
+
+    .page-eyebrow {
+        color: #1769e0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .page-header h1 {
+        margin: 7px 0;
+        color: #172b4d;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .filter-panel,
+    .report-panel {
+        padding: 25px;
+        margin-bottom: 22px;
+        border: 1px solid #e5eaf2;
+        border-radius: 17px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(20, 50, 90, 0.05);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .filter-field label {
+        color: #52657c;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .filter-field input {
+        min-width: 180px;
+        padding: 11px;
+        border: 1px solid #dce4ef;
+        border-radius: 8px;
+        color: #52657c;
+        background: #fbfcfe;
+    }
+
+    .filter-button,
+    .reset-button {
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .filter-button {
+        border: none;
+        background: #1769e0;
+        color: white;
+    }
+
+    .reset-button {
+        border: 1px solid #dce4ef;
+        background: white;
+        color: #52657c;
+    }
+
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 23px;
+        border: 1px solid #e5eaf2;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(20, 50, 90, 0.05);
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+    .blue {
+        background: #e8f1ff;
+        color: #1769e0;
+    }
+
+    .orange {
+        background: #fff1df;
+        color: #d98216;
+    }
+
+    .green {
+        background: #e4f8ed;
+        color: #16834b;
+    }
+
+    .purple {
+        background: #f0e9ff;
+        color: #7651c9;
+    }
+
+    .summary-card p {
+        margin: 0 0 7px;
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .summary-card h2 {
+        margin: 0;
+        color: #243b53;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .loss-text {
+        color: #dc3545 !important;
+    }
+
+    .panel-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .panel-heading h2 {
+        margin: 0 0 5px;
+        color: #243b53;
+        font-size: 20px;
+    }
+
+    .panel-heading p {
+        margin: 0;
+        color: #8a98aa;
+        font-size: 13px;
+    }
+
+    .record-count {
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #edf4ff;
+        color: #1769e0;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        padding: 14px 12px;
+        background: #f3f6fb;
+        color: #63758b;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .report-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #edf1f6;
+        color: #52657c;
+        font-size: 13px;
+    }
+
+    .bold-text {
+        color: #243b53 !important;
+        font-weight: 700;
+    }
+
+    .amount-text {
+        color: #1769e0 !important;
+        font-weight: 800;
+    }
+
+    .expense-text {
+        color: #dc3545 !important;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #fff3cd;
+        color: #946c00;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .empty-row {
+        padding: 35px !important;
+        color: #8a98aa !important;
+        text-align: center;
+    }
+
+    @@media (max-width: 1200px) {
+
+        .summary-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+    }
+
+    @@media (max-width: 768px) {
+
+        .reports-page {
+            padding: 22px 15px;
+        }
+
+        .summary-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .filter-field input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .filter-button,
+        .reset-button {
+            text-align: center;
+        }
+
+        .panel-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .filter-panel,
+        .report-panel {
+            padding: 18px;
+        }
+
+    }
+
+</style>

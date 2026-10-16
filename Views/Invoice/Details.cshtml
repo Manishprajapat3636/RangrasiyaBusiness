@@ -1,0 +1,436 @@
+
+@model RangrasiyaBusiness.Models.Invoice
+
+@{
+    ViewData["Title"] = "Invoice Details";
+}
+
+<div class="invoice-details-page">
+
+    <div class="page-header">
+        <div>
+            <span class="page-eyebrow">INVOICE MANAGEMENT</span>
+            <h1>Invoice Details</h1>
+            <p>View complete invoice and billing information.</p>
+        </div>
+
+        <div class="header-actions">
+            <a asp-action="DownloadPdf"
+               asp-route-id="@Model.InvoiceId"
+               class="btn-primary">
+                ↓ Download PDF
+            </a>
+
+            <a asp-action="Index" class="btn-secondary">
+                ← Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Invoice Header -->
+    <div class="details-panel">
+
+        <div class="invoice-top">
+
+            <div>
+                <div class="company-name">RANGRASIYA</div>
+                <span class="invoice-label">TAX INVOICE</span>
+            </div>
+
+            <div class="invoice-number">
+                <span>Invoice Number</span>
+                <strong>@Model.InvoiceNumber</strong>
+            </div>
+
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <span>Invoice Date</span>
+                <strong>@Model.InvoiceDate.ToString("dd-MM-yyyy")</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Payment Status</span>
+                <strong class="status-badge">
+                    @Model.PaymentStatus
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <span>Company Name</span>
+                <strong>@Model.Customer?.CustomerName</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Phone</span>
+                <strong>@Model.Customer?.Phone</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Work Order Number</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.WorkOrderNo)
+                        ? "-"
+                        : Model.WorkOrderNo)
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <span>SAC / HSN Code</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.SACHSNCode)
+                        ? "-"
+                        : Model.SACHSNCode)
+                </strong>
+            </div>
+
+            <div class="info-box full-width">
+                <span>Place of Work</span>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(Model.PlaceOfWork)
+                        ? "-"
+                        : Model.PlaceOfWork)
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Items -->
+    <div class="details-panel">
+
+        <div class="section-heading">
+            <h2>Invoice Items</h2>
+            <span>@Model.InvoiceItems.Count Items</span>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="invoice-table">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item / Service</th>
+                        <th>Quantity</th>
+                        <th>Rate</th>
+                        <th>GST %</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int serialNumber = 1;
+                    }
+
+                    @foreach (var item in Model.InvoiceItems)
+                    {
+                        <tr>
+                            <td>@serialNumber</td>
+                            <td class="item-name">
+                                @(item.ItemNameSnapshot ?? item.Item?.ItemName ?? "-")
+                            </td>
+                            <td>@item.Quantity</td>
+                            <td>₹@item.Rate.ToString("N2")</td>
+                            <td>@item.GSTPercentage%</td>
+                            <td class="total-amount">
+                                ₹@item.TotalAmount.ToString("N2")
+                            </td>
+                        </tr>
+
+                        serialNumber++;
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="details-panel summary-panel">
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>₹@Model.SubTotal.ToString("N2")</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>GST Amount</span>
+            <strong>₹@Model.GSTAmount.ToString("N2")</strong>
+        </div>
+
+        <div class="grand-total-row">
+            <span>Grand Total</span>
+            <strong>₹@Model.GrandTotal.ToString("N2")</strong>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .invoice-details-page {
+        padding: 35px;
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-eyebrow {
+        color: #1769e0;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .page-header h1 {
+        margin: 7px 0;
+        color: #172b4d;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 17px;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .btn-primary {
+        background: #1769e0;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: white;
+        border: 1px solid #dce4ef;
+        color: #52657c;
+    }
+
+    .details-panel {
+        background: white;
+        border: 1px solid #e5eaf2;
+        border-radius: 17px;
+        padding: 28px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 20px rgba(20, 50, 90, 0.05);
+    }
+
+    .invoice-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e8edf4;
+    }
+
+    .company-name {
+        color: #1769e0;
+        font-size: 25px;
+        font-weight: 900;
+    }
+
+    .invoice-label {
+        display: inline-block;
+        margin-top: 6px;
+        color: #718096;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .invoice-number {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+    }
+
+    .invoice-number span,
+    .info-box span {
+        color: #8a98aa;
+        font-size: 12px;
+    }
+
+    .invoice-number strong {
+        color: #243b53;
+        font-size: 18px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        padding-top: 25px;
+    }
+
+    .info-box {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .info-box strong {
+        color: #334e68;
+        font-size: 14px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .status-badge {
+        width: fit-content;
+        padding: 5px 11px;
+        border-radius: 20px;
+        background: #fff3cd;
+        color: #946c00 !important;
+        font-size: 12px !important;
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+        margin: 0;
+        color: #243b53;
+        font-size: 20px;
+    }
+
+    .section-heading span {
+        color: #8a98aa;
+        font-size: 13px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .invoice-table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+    }
+
+    .invoice-table th {
+        padding: 14px 12px;
+        background: #f3f6fb;
+        color: #63758b;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .invoice-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #edf1f6;
+        color: #52657c;
+        font-size: 13px;
+    }
+
+    .item-name {
+        color: #243b53 !important;
+        font-weight: 700;
+    }
+
+    .total-amount {
+        color: #1769e0 !important;
+        font-weight: 800;
+    }
+
+    .summary-panel {
+        max-width: 480px;
+        margin-left: auto;
+    }
+
+    .summary-row,
+    .grand-total-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 12px 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .summary-row strong {
+        color: #52657c;
+    }
+
+    .grand-total-row {
+        margin-top: 10px;
+        padding-top: 18px;
+        border-top: 2px solid #1769e0;
+        color: #1769e0;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .grand-total-row strong {
+        color: #1769e0;
+    }
+
+    @@media (max-width: 768px) {
+
+        .invoice-details-page {
+            padding: 22px 15px;
+        }
+
+        .page-header,
+        .invoice-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .invoice-number {
+            align-items: flex-start;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .summary-panel {
+            max-width: none;
+        }
+
+    }
+
+</style>

@@ -1,0 +1,229 @@
+﻿@model IEnumerable<RangrasiyaBusiness.Models.Customer>
+
+@{
+    ViewData["Title"] = "Customers";
+    var customers = Model?.ToList() ?? new List<RangrasiyaBusiness.Models.Customer>();
+}
+
+<div class="customers-page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+
+        <div>
+            <span class="page-eyebrow">CUSTOMER MANAGEMENT</span>
+
+            <h2>Customers</h2>
+
+            <p>
+                Manage your customer information and business contacts.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="modern-primary-btn">
+            <span>＋</span> Add Customer
+        </a>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="customer-summary">
+
+        <div class="summary-icon">👥</div>
+
+        <div>
+            <span>Total Customers</span>
+            <h3>@customers.Count</h3>
+        </div>
+
+    </div>
+
+    <!-- Search Section -->
+    <div class="modern-panel customer-search-panel">
+
+        <form asp-action="Index" method="get">
+
+            <div class="customer-search">
+
+                <div class="search-input-wrapper">
+                    <span>🔍</span>
+
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="modern-search-input"
+                           placeholder="Search by name, city or phone..."
+                           aria-label="Search customers" />
+                </div>
+
+                <button type="submit" class="modern-search-btn">
+                    Search
+                </button>
+
+                <a asp-action="Index" class="modern-clear-btn">
+                    Clear
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Customer Table -->
+    <div class="modern-panel">
+
+        <div class="table-heading">
+
+            <div>
+                <h5>Customer List</h5>
+                <p>All registered customers</p>
+            </div>
+
+            <span class="table-label">
+                @customers.Count Records
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="modern-table">
+
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Customer</th>
+                        <th>Contact Person</th>
+                        <th>City</th>
+                        <th>GSTIN</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (customers.Any())
+                    {
+                        int sr = 1;
+
+                        foreach (var customer in customers)
+                        {
+                            string customerName =
+                                customer.CustomerName ?? "Unknown";
+
+                            string initial =
+                                customerName.Substring(0, 1).ToUpper();
+
+                            <tr>
+
+                                <td class="serial-number">
+                                    @sr
+                                </td>
+
+                                <td>
+                                    <div class="customer-info-cell">
+
+                                        <div class="customer-avatar">
+                                            @initial
+                                        </div>
+
+                                        <div>
+                                            <strong>
+                                                @customer.CustomerName
+                                            </strong>
+
+                                            <small>
+                                                Customer
+                                            </small>
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(customer.ContactPerson)
+                                        ? "—"
+                                        : customer.ContactPerson)
+                                </td>
+
+                                <td>
+                                    <span class="city-badge">
+                                        📍 @customer.City
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(customer.GSTIN)
+                                        ? "—"
+                                        : customer.GSTIN)
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(customer.Phone)
+                                        ? "—"
+                                        : customer.Phone)
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@customer.CustomerId"
+                                           class="edit-btn">
+                                            ✏️ Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@customer.CustomerId"
+                                           class="delete-btn"
+                                           onclick="return confirm('Are you sure you want to delete this customer?');">
+                                            🗑️ Delete
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            sr++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+
+                                <div class="customer-empty-state">
+
+                                    <div class="empty-icon">
+                                        👥
+                                    </div>
+
+                                    <h4>No Customers Found</h4>
+
+                                    <p>
+                                        Add your first customer to get started.
+                                    </p>
+
+                                    <a asp-action="Create"
+                                       class="modern-primary-btn">
+                                        ＋ Add Customer
+                                    </a>
+
+                                </div>
+
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

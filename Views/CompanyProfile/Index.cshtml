@@ -1,0 +1,166 @@
+﻿@model RangrasiyaBusiness.Models.CompanyProfile
+
+@{
+    ViewData["Title"] = "Company Profile";
+}
+
+<div class="customers-page">
+
+    <div class="page-heading">
+        <div>
+            <h2>Company Profile</h2>
+            <p>Manage your company information and branding</p>
+        </div>
+
+        @if (Model != null)
+        {
+            <a asp-action="Edit" class="modern-primary-btn">
+                ✏️ Edit Profile
+            </a>
+        }
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="modern-panel text-center p-5">
+            <h4>No Company Profile Found</h4>
+
+            <p class="text-muted">
+                Add your company details to use them on invoices and quotations.
+            </p>
+
+            <a asp-action="Create" class="modern-primary-btn">
+                + Create Company Profile
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="company-profile-card">
+
+            <div class="company-profile-header">
+
+                <div class="company-logo">
+                    @if (!string.IsNullOrEmpty(Model.LogoPath))
+                    {
+                        <img src="@Model.LogoPath" alt="Company Logo" />
+                    }
+                    else
+                    {
+                        <span>
+                            @(string.IsNullOrWhiteSpace(Model.CompanyName)
+                                ? "C"
+                                : Model.CompanyName.Substring(0, 1).ToUpper())
+                        </span>
+                    }
+                </div>
+
+                <div>
+                    <h2>@Model.CompanyName</h2>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.BusinessType))
+                    {
+                        <p>@Model.BusinessType</p>
+                    }
+                </div>
+
+            </div>
+
+            <div class="company-details-grid">
+
+                <div class="company-detail">
+                    <span>Owner Name</span>
+                    <strong>@Model.OwnerName</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Phone Number</span>
+                    <strong>@Model.Phone</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Email Address</span>
+                    <strong>@Model.Email</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>GSTIN</span>
+                    <strong>@Model.GSTIN</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>PAN</span>
+                    <strong>@Model.PAN</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>UDYAM Number</span>
+                    <strong>@Model.UDYAMNumber</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Business Type</span>
+                    <strong>@Model.BusinessType</strong>
+                </div>
+
+                <div class="company-detail full-width">
+                    <span>Business Address</span>
+                    <strong>
+                        @Model.Address
+
+                        @if (!string.IsNullOrWhiteSpace(Model.City) ||
+                             !string.IsNullOrWhiteSpace(Model.State) ||
+                             !string.IsNullOrWhiteSpace(Model.Pincode))
+                        {
+                            <br />
+                            @Model.City
+
+                            @if (!string.IsNullOrWhiteSpace(Model.City) &&
+                                 !string.IsNullOrWhiteSpace(Model.State))
+                            {
+                                <text>, </text>
+                            }
+
+                            @Model.State
+
+                            @if (!string.IsNullOrWhiteSpace(Model.Pincode))
+                            {
+                                <text> - @Model.Pincode</text>
+                            }
+                        }
+                    </strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Bank Name</span>
+                    <strong>@Model.BankName</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Branch</span>
+                    <strong>@Model.Branch</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>Account Number</span>
+                    <strong>@Model.AccountNumber</strong>
+                </div>
+
+                <div class="company-detail">
+                    <span>IFSC Code</span>
+                    <strong>@Model.IFSCCode</strong>
+                </div>
+
+            </div>
+
+            <div class="company-profile-footer">
+                <span>Company information</span>
+
+                <a asp-action="Edit" class="edit-btn">
+                    Edit Details
+                </a>
+            </div>
+
+        </div>
+    }
+</div>

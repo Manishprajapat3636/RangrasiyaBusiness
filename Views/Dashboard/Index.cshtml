@@ -1,0 +1,310 @@
+﻿@model RangrasiyaBusiness.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">
+            Welcome back! Here's your business overview.
+        </p>
+    </div>
+
+    <div class="dashboard-date">
+        <span>📅</span> Business Overview
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4">
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-blue">
+            <div class="card-icon">👥</div>
+            <div class="card-content">
+                <p>Total Customers</p>
+                <h2>@Model.TotalCustomers</h2>
+                <a asp-controller="Customer" asp-action="Index">
+                    Manage customers →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-green">
+            <div class="card-icon">📦</div>
+            <div class="card-content">
+                <p>Total Items</p>
+                <h2>@Model.TotalItems</h2>
+                <a asp-controller="Item" asp-action="Index">
+                    View items →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-orange">
+            <div class="card-icon">📄</div>
+            <div class="card-content">
+                <p>Total Quotations</p>
+                <h2>@Model.TotalQuotations</h2>
+                <a asp-controller="Quotation" asp-action="Index">
+                    View quotations →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-purple">
+            <div class="card-icon">🧾</div>
+            <div class="card-content">
+                <p>Total Invoices</p>
+                <h2>@Model.TotalInvoices</h2>
+                <a asp-controller="Invoice" asp-action="Index">
+                    View invoices →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-teal">
+            <div class="card-icon">🛠️</div>
+            <div class="card-content">
+                <p>Total Works</p>
+                <h2>@Model.TotalWorks</h2>
+                <a asp-controller="Work" asp-action="Index">
+                    Manage projects →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card card-dark">
+            <div class="card-icon">💰</div>
+            <div class="card-content">
+                <p>Total Invoice Amount</p>
+                <h2>₹@Model.TotalInvoiceAmount.ToString("N2")</h2>
+                <a asp-controller="Invoice" asp-action="Index">
+                    Invoice summary →
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Quick Actions -->
+<div class="dashboard-section mt-5">
+
+    <h4 class="fw-bold mb-1">Quick Actions</h4>
+
+    <p class="text-muted">
+        Access your frequently used features.
+    </p>
+
+    <div class="row g-3 mt-2">
+
+        <div class="col-md-3">
+            <a asp-controller="Customer"
+               asp-action="Create"
+               class="quick-action">
+                <span>👥</span>
+                <strong>Add Customer</strong>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-controller="Item"
+               asp-action="Create"
+               class="quick-action">
+                <span>📦</span>
+                <strong>Add Item</strong>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-controller="Quotation"
+               asp-action="Create"
+               class="quick-action">
+                <span>📄</span>
+                <strong>New Quotation</strong>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-controller="Invoice"
+               asp-action="Create"
+               class="quick-action">
+                <span>🧾</span>
+                <strong>New Invoice</strong>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- Recent Data -->
+<div class="row g-4 mt-2">
+
+    <!-- Recent Invoices -->
+    <div class="col-xl-6">
+
+        <div class="dashboard-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <h4>Recent Invoices</h4>
+                    <p>Latest created invoices</p>
+                </div>
+
+                <a asp-controller="Invoice"
+                   asp-action="Index">
+                    View All →
+                </a>
+
+            </div>
+
+            @if (Model.RecentInvoices != null &&
+                  Model.RecentInvoices.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table dashboard-table align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Invoice No.</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var invoice in Model.RecentInvoices)
+                            {
+                                <tr>
+
+                                    <td class="fw-semibold">
+                                        @invoice.InvoiceNumber
+                                    </td>
+
+                                    <td>
+                                        @(invoice.Customer?.CustomerName ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        @invoice.InvoiceDate.ToString("dd-MM-yyyy")
+                                    </td>
+
+                                    <td class="text-end fw-semibold">
+                                        ₹@invoice.GrandTotal.ToString("N2")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    No invoices available.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <!-- Recent Quotations -->
+    <div class="col-xl-6">
+
+        <div class="dashboard-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <h4>Recent Quotations</h4>
+                    <p>Latest created quotations</p>
+                </div>
+
+                <a asp-controller="Quotation"
+                   asp-action="Index">
+                    View All →
+                </a>
+
+            </div>
+
+            @if (Model.RecentQuotations != null &&
+                  Model.RecentQuotations.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table dashboard-table align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Quotation No.</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var quotation in Model.RecentQuotations)
+                            {
+                                <tr>
+
+                                    <td class="fw-semibold">
+                                        @quotation.QuotationNumber
+                                    </td>
+
+                                    <td>
+                                        @(quotation.Customer?.CustomerName ?? "N/A")
+                                    </td>
+
+                                    <td>
+                                        @quotation.QuotationDate.ToString("dd-MM-yyyy")
+                                    </td>
+
+                                    <td class="text-end fw-semibold">
+                                        ₹@quotation.GrandTotal.ToString("N2")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    No quotations available.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
